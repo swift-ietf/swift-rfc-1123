@@ -5,7 +5,6 @@
 //  Created by Coen ten Thije Boonkkamp on 28/12/2024.
 //
 
-import Foundation
 import RFC_1123
 import Testing
 
@@ -107,13 +106,5 @@ struct RFC1123Tests {
     func testSubdomainInitializer() throws {
         let host = try Domain.subdomain("com", "example", "host")
         #expect(host.name == "host.example.com")
-    }
-
-    @Test("Successfully encodes and decodes")
-    func testCodable() throws {
-        let original = try Domain("example.com")
-        let encoded = try JSONEncoder().encode(original)
-        let decoded = try JSONDecoder().decode(Domain.self, from: encoded)
-        #expect(original == decoded)
     }
 }

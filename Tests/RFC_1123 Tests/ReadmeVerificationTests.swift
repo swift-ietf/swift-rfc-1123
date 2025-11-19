@@ -5,7 +5,6 @@
 //  Verifies that README code examples actually work
 //
 
-import Foundation
 import RFC_1035
 import RFC_1123
 import Testing
@@ -81,7 +80,7 @@ struct ReadmeVerificationTests {
         #expect(rfc1123Domain.name == "example.com")
 
         // Convert RFC 1123 domain to RFC 1035
-        let backToRFC1035 = try rfc1123Domain.toRFC1035()
+        let backToRFC1035 = try RFC_1035.Domain(rfc1123Domain)
 
         #expect(backToRFC1035.name == "example.com")
     }
@@ -97,18 +96,5 @@ struct ReadmeVerificationTests {
         #expect(throws: RFC_1123.Domain.ValidationError.invalidTLD("123com")) {
             _ = try RFC_1123.Domain("example.123com")
         }
-    }
-
-    @Test("README Line 184-190: Codable support")
-    func codableSupport() throws {
-        let host = try RFC_1123.Domain("example.com")
-
-        // Encode to JSON
-        let encoded = try JSONEncoder().encode(host)
-
-        // Decode from JSON
-        let decoded = try JSONDecoder().decode(RFC_1123.Domain.self, from: encoded)
-
-        #expect(host == decoded)
     }
 }
