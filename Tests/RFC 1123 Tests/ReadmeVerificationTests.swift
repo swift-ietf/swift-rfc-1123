@@ -44,8 +44,8 @@ struct `README Verification` {
     func `README Line 69-76: Working with domain components`() throws {
         let host = try RFC_1123.Domain("api.example.com")
 
-        #expect(host.tld?.stringValue == "com")
-        #expect(host.sld?.stringValue == "example")
+        #expect(host.tld?.value == "com")
+        #expect(host.sld?.value == "example")
         #expect(host.name == "api.example.com")
     }
 
@@ -88,12 +88,12 @@ struct `README Verification` {
     @Test
     func `README Line 166-178: Error handling`() throws {
         // Empty host
-        #expect(throws: RFC_1123.Domain.ValidationError.empty) {
+        #expect(throws: RFC_1123.Domain.Error.empty) {
             _ = try RFC_1123.Domain("")
         }
 
         // Invalid TLD starting with number
-        #expect(throws: RFC_1123.Domain.ValidationError.invalidTLD("123com")) {
+        #expect(throws: RFC_1123.Domain.Error.invalidLabel(.invalidTLD("123com"))) {
             _ = try RFC_1123.Domain("example.123com")
         }
     }

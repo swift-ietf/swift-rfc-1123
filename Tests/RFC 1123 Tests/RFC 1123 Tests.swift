@@ -30,28 +30,28 @@ struct `RFC 1123 Host Tests` {
 
     @Test
     func `Fails with empty host`() throws {
-        #expect(throws: Domain.ValidationError.empty) {
+        #expect(throws: Domain.Error.empty) {
             _ = try Domain("")
         }
     }
 
     @Test
     func `Fails with invalid TLD starting with number`() throws {
-        #expect(throws: Domain.ValidationError.invalidTLD("123com")) {
+        #expect(throws: Domain.Error.invalidLabel(.invalidTLD("123com"))) {
             _ = try Domain("example.123com")
         }
     }
 
     @Test
     func `Fails with invalid TLD ending with number`() throws {
-        #expect(throws: Domain.ValidationError.invalidTLD("com123")) {
+        #expect(throws: Domain.Error.invalidLabel(.invalidTLD("com123"))) {
             _ = try Domain("example.com123")
         }
     }
 
     @Test
     func `Fails with invalid label containing special characters`() throws {
-        #expect(throws: Domain.ValidationError.invalidLabel("host@name")) {
+        #expect(throws: Domain.Error.invalidLabel(.invalidCharacters("host@name"))) {
             _ = try Domain("host@name.com")
         }
     }
@@ -59,13 +59,13 @@ struct `RFC 1123 Host Tests` {
     @Test
     func `Successfully gets TLD`() throws {
         let host = try Domain("example.com")
-        #expect(host.tld?.stringValue == "com")
+        #expect(host.tld?.value == "com")
     }
 
     @Test
     func `Successfully gets SLD`() throws {
         let host = try Domain("example.com")
-        #expect(host.sld?.stringValue == "example")
+        #expect(host.sld?.value == "example")
     }
 
     @Test

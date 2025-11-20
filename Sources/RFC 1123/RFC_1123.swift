@@ -5,50 +5,97 @@
 //  Created by Coen ten Thije Boonkkamp on 28/12/2024.
 //
 
-import RFC_1035
+import INCITS_4_1986
+import Standards
+public import RFC_1035
 
 /// RFC 1123 compliant host name
 public struct Domain: Hashable, Sendable {
     /// The labels that make up the host name, from least significant to most significant
-    private let labels: [Label]
+    let labels: [Label]
 
-    /// Initialize with an array of string labels, validating RFC 1123 rules
-    public init(labels: [String]) throws {
+    /// Initialize with an array of validated labels, performing domain-level validation
+    ///
+    /// This is the canonical initializer. Labels are already validated,
+    /// so this only performs compositional validation (count, total length).
+    public init(labels: [Label]) throws(Error) {
         guard !labels.isEmpty else {
-            throw ValidationError.empty
+            throw Error.empty
         }
 
         guard labels.count <= Limits.maxLabels else {
-            throw ValidationError.tooManyLabels
+            throw Error.tooManyLabels
         }
 
-        // Validate TLD according to stricter RFC 1123 rules
-        guard let tld = labels.last else {
-            throw ValidationError.empty
-        }
-
-        // Convert and validate labels
-        var validatedLabels = try labels.dropLast().map { label in
-            try Label(label, validateAs: .label)
-        }
-
-        // Add TLD with stricter validation
-        validatedLabels.append(try Label(tld, validateAs: .tld))
-
-        self.labels = validatedLabels
+        self.labels = labels
 
         // Check total length including dots
         let totalLength = self.name.count
         guard totalLength <= Limits.maxLength else {
-            throw ValidationError.tooLong(totalLength)
+            throw Error.tooLong(totalLength)
         }
+    }
+}
+
+// MARK: - Convenience Initializers
+extension Domain {
+    /// Initialize with an array of string labels, validating and converting to Labels
+    ///
+    /// Convenience initializer that validates strings as labels (with TLD-specific validation),
+    /// then delegates to the canonical `init(labels: [Label])`.
+    public init(labels labelStrings: [String]) throws(Error) {
+        guard !labelStrings.isEmpty else {
+            throw Error.empty
+        }
+
+        // Validate TLD according to stricter RFC 1123 rules
+        guard let tld = labelStrings.last else {
+            throw Error.empty
+        }
+
+        // Convert and validate labels, wrapping Label.Error
+        var validatedLabels: [Label] = []
+        validatedLabels.reserveCapacity(labelStrings.count)
+
+        for labelString in labelStrings.dropLast() {
+            do {
+                validatedLabels.append(try Label(labelString, validateAs: .label))
+            } catch {
+                // Typed throws: compiler knows error is Label.Error
+                throw Error.invalidLabel(error)
+            }
+        }
+
+        // Add TLD with stricter validation
+        do {
+            validatedLabels.append(try Label(tld, validateAs: .tld))
+        } catch {
+            // Typed throws: compiler knows error is Label.Error
+            throw Error.invalidLabel(error)
+        }
+
+        // Delegate to canonical initializer
+        try self.init(labels: validatedLabels)
     }
 
     /// Initialize from a string representation (e.g. "host.example.com")
-    public init(_ string: String) throws {
+    ///
+    /// Convenience initializer that parses dot-separated labels.
+    public init(_ string: String) throws(Error) {
         try self.init(
-            labels: string.split(separator: ".", omittingEmptySubsequences: true).map(String.init)
+            labels: string
+                .split(separator: ".", omittingEmptySubsequences: true)
+                .map(String.init)
         )
+    }
+
+    /// Initialize from bytes representation
+    ///
+    /// Convenience initializer that decodes bytes as UTF-8 and validates.
+    public init(_ bytes: [UInt8]) throws(Error) {
+        // Decode bytes as UTF-8 and validate
+        let string = String(decoding: bytes, as: UTF8.self)
+        try self.init(string)
     }
 }
 
@@ -64,24 +111,43 @@ extension Domain {
 extension Domain {
     /// A type-safe host label that enforces RFC 1123 rules
     public struct Label: Hashable, Sendable {
-        public let value: String
+        /// Canonical byte storage (ASCII-only per RFC 1123)
+        let _value: [UInt8]
 
-        /// Initialize a label, validating RFC 1123 rules
-        internal init(_ string: String, validateAs type: ValidationType) throws {
-            guard !string.isEmpty, string.count <= Domain.Limits.maxLabelLength else {
-                throw type == .tld
-                    ? Domain.ValidationError.invalidTLD(string)
-                    : Domain.ValidationError.invalidLabel(string)
+        /// String representation derived from canonical bytes via String extension init
+        public var value: String {
+            String(self)
+        }
+
+        /// Initialize a label from a string, validating RFC 1123 rules
+        internal init(_ string: String, validateAs type: ValidationType) throws(Error) {
+            // Check emptiness
+            guard !string.isEmpty else {
+                throw Error.empty
             }
 
+            // Check length
+            guard string.count <= Domain.Limits.maxLabelLength else {
+                throw Error.tooLong(string.count, label: string)
+            }
+
+            // Validate against appropriate regex
             let regex = type == .tld ? Domain.tldRegex : Domain.labelRegex
             guard (try? regex.wholeMatch(in: string)) != nil else {
                 throw type == .tld
-                    ? Domain.ValidationError.invalidTLD(string)
-                    : Domain.ValidationError.invalidLabel(string)
+                    ? Error.invalidTLD(string)
+                    : Error.invalidCharacters(string)
             }
 
-            self.value = string
+            // Store as canonical byte representation (ASCII-only)
+            self._value = [UInt8](utf8: string)
+        }
+
+        /// Initialize a label from bytes, validating RFC 1123 rules
+        internal init(_ bytes: [UInt8], validateAs type: ValidationType) throws(Error) {
+            // Decode bytes as UTF-8 and validate
+            let string = String(decoding: bytes, as: UTF8.self)
+            try self.init(string, validateAs: type)
         }
     }
 }
@@ -131,47 +197,40 @@ extension Domain {
     }
 
     /// Creates a subdomain by prepending new labels
-    public func addingSubdomain(_ components: [String]) throws -> Domain {
+    public func addingSubdomain(_ components: [String]) throws(Error) -> Domain {
+        // Uses string convenience init since mixing strings with existing labels
         try Domain(labels: components + labels.map(String.init))
     }
 
-    public func addingSubdomain(_ components: String...) throws -> Domain {
+    public func addingSubdomain(_ components: String...) throws(Error) -> Domain {
         try self.addingSubdomain(components)
     }
 
     /// Returns the parent domain by removing the leftmost label
-    public func parent() throws -> Domain? {
+    public func parent() throws(Error) -> Domain? {
         guard labels.count > 1 else { return nil }
-        return try Domain(labels: labels.dropFirst().map(String.init))
+        // Use canonical init with validated Labels
+        return try Domain(labels: Array(labels.dropFirst()))
     }
 
     /// Returns the root domain (tld + sld)
-    public func root() throws -> Domain? {
+    public func root() throws(Error) -> Domain? {
         guard labels.count >= 2 else { return nil }
-        return try Domain(labels: labels.suffix(2).map(String.init))
+        // Use canonical init with validated Labels
+        return try Domain(labels: Array(labels.suffix(2)))
     }
 }
 
-// MARK: - Errors
-extension Domain {
-    public enum ValidationError: Error, Equatable {
-        case empty
-        case tooLong(_ length: Int)
-        case tooManyLabels
-        case invalidLabel(_ label: String)
-        case invalidTLD(_ tld: String)
-    }
-}
 
 // MARK: - Convenience Initializers
 extension Domain {
     /// Creates a host from root level components
-    public static func root(_ sld: String, _ tld: String) throws -> Domain {
+    public static func root(_ sld: String, _ tld: String) throws(Error) -> Domain {
         try Domain(labels: [sld, tld])
     }
 
     /// Creates a subdomain with components in most-to-least significant order
-    public static func subdomain(_ components: String...) throws -> Domain {
+    public static func subdomain(_ components: String...) throws(Error) -> Domain {
         try Domain(labels: components.reversed())
     }
 }
@@ -182,12 +241,12 @@ extension Domain: CustomStringConvertible {
 }
 
 extension Domain: Codable {
-    public func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: any Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(name)
     }
 
-    public init(from decoder: Decoder) throws {
+    public init(from decoder: any Decoder) throws {
         let container = try decoder.singleValueContainer()
         let string = try container.decode(String.self)
         try self.init(string)
@@ -200,13 +259,13 @@ extension Domain: RawRepresentable {
 }
 
 extension RFC_1123.Domain {
-    public init(_ domain: RFC_1035.Domain) throws {
+    public init(_ domain: RFC_1035.Domain) throws(Error) {
         try self.init(domain.name)
     }
 }
 
 extension RFC_1035.Domain {
-    public init(_ domain: RFC_1123.Domain) throws {
+    public init(_ domain: RFC_1123.Domain) throws(RFC_1035.Domain.Error) {
         try self.init(domain.name)
     }
 }
