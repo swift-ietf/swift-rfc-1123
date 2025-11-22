@@ -103,7 +103,7 @@ extension [UInt8] {
 
         for (index, label) in domain.labels.enumerated() {
             if index > 0 {
-                self.append(UInt8(ascii: "."))
+                self.append(.ascii.period)
             }
             self.append(contentsOf: label._value)
         }
