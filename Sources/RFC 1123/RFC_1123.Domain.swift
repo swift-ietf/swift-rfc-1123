@@ -45,7 +45,7 @@ extension RFC_1123.Domain {
     ///
     /// Convenience initializer that validates strings as labels (with TLD-specific validation),
     /// then delegates to the canonical `init(labels: [Label])`.
-    public init(labels labelStrings: some Sequence<some StringProtocol>) throws(Error) {
+    public init<S: StringProtocol>(labels labelStrings: [S]) throws(Error) {
         guard !labelStrings.isEmpty else {
             throw Error.empty
         }
@@ -62,8 +62,7 @@ extension RFC_1123.Domain {
         for labelString in labelStrings.dropLast() {
             do {
                 validatedLabels.append(try Label(labelString, validateAs: .label))
-            } catch {
-                // Typed throws: compiler knows error is Label.Error
+            } catch let error {
                 throw Error.invalidLabel(error)
             }
         }
@@ -71,8 +70,7 @@ extension RFC_1123.Domain {
         // Add TLD with stricter validation
         do {
             validatedLabels.append(try Label(tld, validateAs: .tld))
-        } catch {
-            // Typed throws: compiler knows error is Label.Error
+        } catch let error {
             throw Error.invalidLabel(error)
         }
 
@@ -83,10 +81,10 @@ extension RFC_1123.Domain {
     /// Initialize from a string representation (e.g. "host.example.com")
     ///
     /// Convenience initializer that parses dot-separated labels.
-    public init(_ string: some StringProtocol) throws(Error) {
+    public init(_ string: String) throws(Error) {
         try self.init(
             labels: string
-                .split(separator: ".", omittingEmptySubsequences: true)
+                .split(separator: Character("."), omittingEmptySubsequences: true)
                 .map(String.init)
         )
     }
@@ -122,7 +120,7 @@ extension RFC_1123.Domain {
         }
 
         /// Initialize a label from a string, validating RFC 1123 rules
-        internal init(_ string: some StringProtocol, validateAs type: ValidationType) throws(Error) {
+        internal init<S: StringProtocol>(_ string: S, validateAs type: ValidationType) throws(Error) {
             // Check emptiness
             guard !string.isEmpty else {
                 throw Error.empty
@@ -130,15 +128,16 @@ extension RFC_1123.Domain {
 
             // Check length
             guard string.count <= RFC_1123.Domain.Limits.maxLabelLength else {
-                throw Error.tooLong(string.count, label: string)
+                throw Error.tooLong(string.count, label: String(string))
             }
 
             // Validate against appropriate regex
             let regex = type == .tld ? RFC_1123.Domain.tldRegex : RFC_1123.Domain.labelRegex
-            guard (try? regex.wholeMatch(in: string)) != nil else {
+            let stringValue = String(string)
+            guard (try? regex.wholeMatch(in: stringValue)) != nil else {
                 throw type == .tld
-                    ? Error.invalidTLD(string)
-                    : Error.invalidCharacters(string)
+                    ? Error.invalidTLD(stringValue)
+                    : Error.invalidCharacters(stringValue)
             }
 
             // Store as canonical byte representation (ASCII-only)
