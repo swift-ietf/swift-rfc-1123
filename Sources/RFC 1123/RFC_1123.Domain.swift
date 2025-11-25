@@ -130,7 +130,7 @@ extension RFC_1123.Domain: UInt8.ASCII.Serializing {
     ///
     /// - Parameter bytes: The ASCII byte representation of the domain
     /// - Throws: `RFC_1123.Domain.Error` if the bytes are malformed
-    public init<Bytes: Collection>(ascii bytes: Bytes) throws(Error)
+    public init<Bytes: Collection>(ascii bytes: Bytes, in context: Void) throws(Error)
     where Bytes.Element == UInt8 {
         guard !bytes.isEmpty else {
             throw Error.empty

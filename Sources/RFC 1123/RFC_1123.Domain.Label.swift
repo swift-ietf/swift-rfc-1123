@@ -109,7 +109,7 @@ extension RFC_1123.Domain.Label: UInt8.ASCII.Serializing {
     ///
     /// - Parameter bytes: The ASCII byte representation of the label
     /// - Throws: `RFC_1123.Domain.Label.Error` if the bytes are malformed
-    public init<Bytes: Collection>(ascii bytes: Bytes) throws(Error)
+    public init<Bytes: Collection>(ascii bytes: Bytes, in context: Void) throws(Error)
     where Bytes.Element == UInt8 {
         guard let firstByte = bytes.first else {
             throw Error.empty
