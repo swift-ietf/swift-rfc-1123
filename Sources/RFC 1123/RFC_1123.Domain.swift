@@ -92,7 +92,7 @@ extension RFC_1123.Domain {
     /// Initialize from bytes representation
     ///
     /// Convenience initializer that decodes bytes as UTF-8 and validates.
-    public init(_ bytes: [UInt8]) throws(Error) {
+    public init(ascii bytes: [UInt8]) throws(Error) {
         // Decode bytes as UTF-8 and validate
         let string = String(decoding: bytes, as: UTF8.self)
         try self.init(string)
@@ -145,7 +145,7 @@ extension RFC_1123.Domain {
         }
 
         /// Initialize a label from bytes, validating RFC 1123 rules
-        internal init(_ bytes: [UInt8], validateAs type: ValidationType) throws(Error) {
+        internal init(ascii bytes: [UInt8], validateAs type: ValidationType) throws(Error) {
             // Decode bytes as UTF-8 and validate
             let string = String(decoding: bytes, as: UTF8.self)
             try self.init(string, validateAs: type)
