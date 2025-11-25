@@ -9,13 +9,13 @@ Swift implementation of RFC 1123: Requirements for Internet Hosts - Application 
 
 RFC 1123 updates RFC 1035 with relaxed domain name syntax rules for modern internet hosts. This package provides a pure Swift implementation of RFC 1123-compliant hostnames with full validation, type-safe label handling, and convenient APIs for working with host hierarchies.
 
-The package enforces RFC 1123 rules which allow labels to begin with digits (unlike RFC 1035), while maintaining stricter TLD requirements (must start and end with letters). It provides seamless conversion between RFC 1035 and RFC 1123 domain representations.
+The package enforces RFC 1123 rules which allow labels to begin with digits (unlike RFC 1035), while requiring that the TLD starts with a letter (to distinguish hostnames from IP addresses). It provides seamless conversion between RFC 1035 and RFC 1123 domain representations.
 
 ## Features
 
 - **RFC 1123 Compliance**: Full validation of hostname syntax according to RFC 1123 specification
 - **Relaxed Label Rules**: Labels can begin with digits (e.g., "123.example.com" is valid)
-- **Strict TLD Validation**: Top-level domains must start and end with letters
+- **TLD Validation**: Top-level domains must start with a letter (per RFC 1123 Section 2.1)
 - **RFC 1035 Interoperability**: Seamless conversion between RFC 1035 and RFC 1123 domains
 - **Type-Safe Labels**: Label type that enforces RFC 1123 rules at compile time
 - **Domain Hierarchy**: Navigate parent domains, root domains, and detect subdomain relationships
@@ -82,11 +82,11 @@ print(host.name)  // "api.example.com"
 let host = try Domain("api.v1.example.com")
 
 // Get parent domain
-let parent = try host.parent()
+let parent = host.parent()
 print(parent?.name)  // "v1.example.com"
 
 // Get root domain (TLD + SLD)
-let root = try host.root()
+let root = host.root()
 print(root?.name)  // "example.com"
 
 // Add subdomain
@@ -131,8 +131,8 @@ public struct Domain: Hashable, Sendable {
     public func isSubdomain(of parent: Domain) -> Bool
     public func addingSubdomain(_ components: [String]) throws -> Domain
     public func addingSubdomain(_ components: String...) throws -> Domain
-    public func parent() throws -> Domain?
-    public func root() throws -> Domain?
+    public func parent() -> Domain?
+    public func root() -> Domain?
 }
 ```
 
@@ -147,9 +147,9 @@ RFC 1123 enforces the following rules:
   - Can start with letter or digit (a-z, A-Z, 0-9)
   - Can end with letter or digit
   - May contain letters, digits, and hyphens in interior positions
-- **TLD Format** (stricter):
-  - Must start with a letter (a-z, A-Z)
-  - Must end with a letter
+- **TLD Format**:
+  - Must start with a letter (a-z, A-Z) per RFC 1123 Section 2.1
+  - Can end with letter or digit
   - May contain letters, digits, and hyphens in interior positions
 
 ### Key Differences from RFC 1035
@@ -158,7 +158,7 @@ RFC 1123 enforces the following rules:
 |------|----------|----------|
 | Label can start with digit | No | Yes |
 | TLD can start with digit | No | No |
-| TLD can end with digit | No | No |
+| TLD can end with digit | Yes | Yes |
 
 ### Error Handling
 

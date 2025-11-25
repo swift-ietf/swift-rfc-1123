@@ -37,21 +37,22 @@ struct `RFC 1123 Host Tests` {
 
     @Test
     func `Fails with invalid TLD starting with number`() throws {
-        #expect(throws: RFC_1123.Domain.Error.invalidLabel(.invalidTLD("123com"))) {
+        #expect(throws: RFC_1123.Domain.Error.invalidTLD("123com")) {
             _ = try RFC_1123.Domain("example.123com")
         }
     }
 
     @Test
-    func `Fails with invalid TLD ending with number`() throws {
-        #expect(throws: RFC_1123.Domain.Error.invalidLabel(.invalidTLD("com123"))) {
-            _ = try RFC_1123.Domain("example.com123")
-        }
+    func `Successfully creates host with TLD ending with number`() throws {
+        // RFC 1123 only requires TLD to START with a letter, not end with one
+        let host = try RFC_1123.Domain("example.com123")
+        #expect(host.name == "example.com123")
+        #expect(host.tld?.rawValue == "com123")
     }
 
     @Test
     func `Fails with invalid label containing special characters`() throws {
-        #expect(throws: RFC_1123.Domain.Error.invalidLabel(.invalidCharacters("host@name"))) {
+        #expect(throws: RFC_1123.Domain.Error.self) {
             _ = try RFC_1123.Domain("host@name.com")
         }
     }
@@ -59,13 +60,13 @@ struct `RFC 1123 Host Tests` {
     @Test
     func `Successfully gets TLD`() throws {
         let host = try RFC_1123.Domain("example.com")
-        #expect(host.tld?.value == "com")
+        #expect(host.tld! == "com")
     }
 
     @Test
     func `Successfully gets SLD`() throws {
         let host = try RFC_1123.Domain("example.com")
-        #expect(host.sld?.value == "example")
+        #expect(host.sld! == "example")
     }
 
     @Test
@@ -85,14 +86,14 @@ struct `RFC 1123 Host Tests` {
     @Test
     func `Successfully gets parent domain`() throws {
         let host = try RFC_1123.Domain("host.example.com")
-        let parent = try host.parent()
+        let parent = host.parent()
         #expect(parent?.name == "example.com")
     }
 
     @Test
     func `Successfully gets root domain`() throws {
         let host = try RFC_1123.Domain("host.example.com")
-        let root = try host.root()
+        let root = host.root()
         #expect(root?.name == "example.com")
     }
 

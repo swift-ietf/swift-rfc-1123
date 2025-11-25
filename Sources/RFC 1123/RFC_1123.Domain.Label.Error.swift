@@ -21,18 +21,15 @@ extension RFC_1123.Domain.Label {
     ///
     /// These represent atomic constraint violations at the label level,
     /// as defined by RFC 1123 Section 2.1.
-    public enum Error: Swift.Error, Equatable {
+    public enum Error: Swift.Error, Sendable, Equatable {
         /// Label is empty
         case empty
 
         /// Label exceeds maximum length of 63 octets
         case tooLong(_ length: Int, label: String)
 
-        /// Label contains invalid characters for regular labels
-        case invalidCharacters(_ label: String)
-
-        /// TLD validation failed (must start with letter, end with letter)
-        case invalidTLD(_ tld: String)
+        /// Label contains invalid characters
+        case invalidCharacters(_ label: String, byte: UInt8, reason: String)
     }
 }
 
@@ -45,10 +42,9 @@ extension RFC_1123.Domain.Label.Error: CustomStringConvertible {
             return "Domain label cannot be empty"
         case .tooLong(let length, let label):
             return "Domain label '\(label)' is too long (\(length) bytes, maximum 63)"
-        case .invalidCharacters(let label):
-            return "Domain label '\(label)' contains invalid characters"
-        case .invalidTLD(let tld):
-            return "Invalid TLD '\(tld)': must start with a letter and end with a letter"
+        case .invalidCharacters(let label, let byte, let reason):
+            return
+                "Domain label '\(label)' has invalid byte 0x\(String(byte, radix: 16)): \(reason)"
         }
     }
 }

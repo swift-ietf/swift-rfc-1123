@@ -19,15 +19,15 @@ let package = Package(
         .macOS(.v15),
         .iOS(.v18),
         .tvOS(.v18),
-        .watchOS(.v11)
+        .watchOS(.v11),
     ],
     products: [
-        .library(name: .rfc1123, targets: [.rfc1123]),
+        .library(name: .rfc1123, targets: [.rfc1123])
     ],
     dependencies: [
-        .package(url: "https://github.com/swift-standards/swift-rfc-1035.git", from: "0.1.0"),
+        .package(url: "https://github.com/swift-standards/swift-rfc-1035", from: "0.1.0"),
         .package(url: "https://github.com/swift-standards/swift-standards.git", from: "0.1.0"),
-        .package(url: "https://github.com/swift-standards/swift-incits-4-1986.git", from: "0.1.0"),
+        .package(url: "https://github.com/swift-standards/swift-incits-4-1986.git", from: "0.3.0"),
     ],
     targets: [
         .target(
@@ -35,7 +35,7 @@ let package = Package(
             dependencies: [
                 .rfc1035,
                 .standards,
-                .incits41986
+                .incits41986,
             ]
         ),
         .testTarget(

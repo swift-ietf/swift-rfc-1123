@@ -21,7 +21,7 @@ extension RFC_1123.Domain {
     ///
     /// These represent compositional constraint violations at the domain level,
     /// as defined by RFC 1123 Section 2.1.
-    public enum Error: Swift.Error, Equatable {
+    public enum Error: Swift.Error, Sendable, Equatable {
         /// Domain has no labels (empty string)
         case empty
 
@@ -33,6 +33,13 @@ extension RFC_1123.Domain {
 
         /// One or more labels failed validation
         case invalidLabel(_ error: Label.Error)
+
+        /// The highest-level component label (TLD) does not start with a letter
+        ///
+        /// RFC 1123 Section 2.1 states: "a valid host name can never have the
+        /// dotted-decimal form #.#.#.#, since at least the highest-level component
+        /// label will be alphabetic."
+        case invalidTLD(_ tld: String)
     }
 }
 
@@ -49,6 +56,9 @@ extension RFC_1123.Domain.Error: CustomStringConvertible {
             return "Domain has too many labels (maximum 127)"
         case .invalidLabel(let error):
             return "Invalid label: \(error.description)"
+        case .invalidTLD(let tld):
+            return
+                "Invalid TLD '\(tld)': highest-level component label must start with a letter (RFC 1123 Section 2.1)"
         }
     }
 }

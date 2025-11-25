@@ -12,4 +12,3 @@ extension RFC_1035.Domain {
         try self.init(domain.name)
     }
 }
-

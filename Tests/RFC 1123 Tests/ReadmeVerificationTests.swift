@@ -44,8 +44,8 @@ struct `README Verification` {
     func `README Line 69-76: Working with domain components`() throws {
         let host = try RFC_1123.Domain("api.example.com")
 
-        #expect(host.tld?.value == "com")
-        #expect(host.sld?.value == "example")
+        #expect(host.tld! == "com")
+        #expect(host.sld! == "example")
         #expect(host.name == "api.example.com")
     }
 
@@ -54,11 +54,11 @@ struct `README Verification` {
         let host = try RFC_1123.Domain("api.v1.example.com")
 
         // Get parent domain
-        let parent = try host.parent()
+        let parent = host.parent()
         #expect(parent?.name == "v1.example.com")
 
         // Get root domain
-        let root = try host.root()
+        let root = host.root()
         #expect(root?.name == "example.com")
 
         // Add subdomain
@@ -93,7 +93,7 @@ struct `README Verification` {
         }
 
         // Invalid TLD starting with number
-        #expect(throws: RFC_1123.Domain.Error.invalidLabel(.invalidTLD("123com"))) {
+        #expect(throws: RFC_1123.Domain.Error.self) {
             _ = try RFC_1123.Domain("example.123com")
         }
     }
