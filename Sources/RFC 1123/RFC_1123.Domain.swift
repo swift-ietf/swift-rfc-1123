@@ -91,9 +91,9 @@ extension RFC_1123.Domain: Hashable {
     }
 }
 
-// MARK: - Serializing
+// MARK: - Serializable
 
-extension RFC_1123.Domain: UInt8.ASCII.Serializing {
+extension RFC_1123.Domain: UInt8.ASCII.Serializable {
     public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
 
     /// Parses a host name from canonical byte representation (CANONICAL PRIMITIVE)
