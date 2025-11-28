@@ -74,7 +74,7 @@ extension RFC_1123.Domain.Label: Hashable {
 // MARK: - Serializable
 
 extension RFC_1123.Domain.Label: UInt8.ASCII.Serializable {
-    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
+//    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
 
     /// Parses a host label from canonical byte representation (CANONICAL PRIMITIVE)
     ///
@@ -162,40 +162,8 @@ extension RFC_1123.Domain.Label: UInt8.ASCII.Serializable {
     }
 }
 
-// MARK: - Byte Serialization
-
-extension [UInt8] {
-    /// Creates ASCII byte representation of an RFC 1123 host label
-    ///
-    /// This is the canonical serialization of host labels to bytes.
-    /// RFC 1123 host labels are ASCII-only by definition.
-    ///
-    /// ## Category Theory
-    ///
-    /// This is the most universal serialization (natural transformation):
-    /// - **Domain**: RFC_1123.Domain.Label (structured data)
-    /// - **Codomain**: [UInt8] (ASCII bytes)
-    ///
-    /// String representation is derived as composition:
-    /// ```
-    /// Domain.Label → [UInt8] (ASCII) → String (UTF-8 interpretation)
-    /// ```
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// let label = try RFC_1123.Domain.Label("3com")
-    /// let bytes = [UInt8](label)
-    /// // bytes == "3com" as ASCII bytes
-    /// ```
-    ///
-    /// - Parameter label: The host label to serialize
-    public init(_ label: RFC_1123.Domain.Label) {
-        self = Array(label.rawValue.utf8)
-    }
-}
-
 // MARK: - Protocol Conformances
 
 extension RFC_1123.Domain.Label: UInt8.ASCII.RawRepresentable {}
+extension RFC_1123.Domain.Label: RawRepresentable {}
 extension RFC_1123.Domain.Label: CustomStringConvertible {}

@@ -72,8 +72,6 @@ extension RFC_1123 {
     }
 }
 
-// MARK: - Hashable
-
 extension RFC_1123.Domain: Hashable {
     /// Hash value (case-insensitive per RFC 1123)
     public func hash(into hasher: inout Hasher) {
@@ -91,11 +89,11 @@ extension RFC_1123.Domain: Hashable {
     }
 }
 
-// MARK: - Serializable
+extension RFC_1123.Domain: UInt8.ASCII.RawRepresentable {}
+
+extension RFC_1123.Domain: CustomStringConvertible {}
 
 extension RFC_1123.Domain: UInt8.ASCII.Serializable {
-    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
-
     /// Parses a host name from canonical byte representation (CANONICAL PRIMITIVE)
     ///
     /// This is the primitive parser that works at the byte level.
@@ -194,46 +192,6 @@ extension RFC_1123.Domain: UInt8.ASCII.Serializable {
     }
 }
 
-// MARK: - Byte Serialization
-
-extension [UInt8] {
-    /// Creates ASCII byte representation of an RFC 1123 host name
-    ///
-    /// This is the canonical serialization of host names to bytes.
-    /// The format is labels joined by dots (ASCII 0x2E).
-    ///
-    /// ## Category Theory
-    ///
-    /// This is the most universal serialization (natural transformation):
-    /// - **Domain**: RFC_1123.Domain (structured data)
-    /// - **Codomain**: [UInt8] (ASCII bytes)
-    ///
-    /// String representation is derived as composition:
-    /// ```
-    /// Domain → [UInt8] (ASCII) → String (UTF-8 interpretation)
-    /// ```
-    ///
-    /// ## Example
-    ///
-    /// ```swift
-    /// let domain = try RFC_1123.Domain("www.3com.com")
-    /// let bytes = [UInt8](domain)
-    /// // bytes == "www.3com.com" as ASCII bytes
-    /// ```
-    ///
-    /// - Parameter domain: The host name to serialize
-    public init(_ domain: RFC_1123.Domain) {
-        self = Array(domain.rawValue.utf8)
-    }
-}
-
-// MARK: - Protocol Conformances
-
-extension RFC_1123.Domain: UInt8.ASCII.RawRepresentable {}
-extension RFC_1123.Domain: CustomStringConvertible {}
-
-// MARK: - Domain Properties
-
 extension RFC_1123.Domain {
     /// The complete host name as a string
     public var name: String {
@@ -250,8 +208,6 @@ extension RFC_1123.Domain {
         labels.dropLast().last
     }
 }
-
-// MARK: - Domain Operations
 
 extension RFC_1123.Domain {
     /// Returns true if this is a subdomain of the given host
@@ -305,8 +261,6 @@ extension RFC_1123.Domain {
         return RFC_1123.Domain(__unchecked: (), rawValue: rootName, labels: rootLabels)
     }
 }
-
-// MARK: - Convenience Initializers
 
 extension RFC_1123.Domain {
     /// Initialize with an array of validated labels
@@ -370,27 +324,5 @@ extension RFC_1123.Domain {
         }
 
         return try RFC_1123.Domain(labels: labels)
-    }
-}
-
-// MARK: - RFC 1035 Interop
-
-extension RFC_1123.Domain {
-    /// Initialize from an RFC 1035 domain
-    ///
-    /// RFC 1035 domains are a subset of RFC 1123 domains (labels must start with letters).
-    /// This initializer always succeeds because RFC 1035 is stricter.
-    public init(_ domain: RFC_1035.Domain) throws(Error) {
-        try self.init(domain.name)
-    }
-}
-
-// MARK: - Constants
-
-extension RFC_1123.Domain {
-    package enum Limits {
-        static let maxLength = 255
-        static let maxLabels = 127
-        static let maxLabelLength = 63
     }
 }
