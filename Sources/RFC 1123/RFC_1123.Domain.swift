@@ -6,7 +6,7 @@
 //
 
 public import INCITS_4_1986
-public import RFC_1035
+import RFC_1035
 
 extension RFC_1123 {
     /// RFC 1123 compliant host name
@@ -94,6 +94,13 @@ extension RFC_1123.Domain: UInt8.ASCII.RawRepresentable {}
 extension RFC_1123.Domain: CustomStringConvertible {}
 
 extension RFC_1123.Domain: UInt8.ASCII.Serializable {
+    public static func serialize<Buffer: RangeReplaceableCollection>(
+        ascii domain: Self,
+        into buffer: inout Buffer
+    ) where Buffer.Element == UInt8 {
+        buffer.append(contentsOf: domain.rawValue.utf8)
+    }
+
     /// Parses a host name from canonical byte representation (CANONICAL PRIMITIVE)
     ///
     /// This is the primitive parser that works at the byte level.

@@ -74,7 +74,12 @@ extension RFC_1123.Domain.Label: Hashable {
 // MARK: - Serializable
 
 extension RFC_1123.Domain.Label: UInt8.ASCII.Serializable {
-//    public static let serialize: @Sendable (Self) -> [UInt8] = [UInt8].init
+    public static func serialize<Buffer: RangeReplaceableCollection>(
+        ascii label: Self,
+        into buffer: inout Buffer
+    ) where Buffer.Element == UInt8 {
+        buffer.append(contentsOf: label.rawValue.utf8)
+    }
 
     /// Parses a host label from canonical byte representation (CANONICAL PRIMITIVE)
     ///
