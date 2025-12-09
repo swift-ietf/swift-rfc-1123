@@ -89,11 +89,11 @@ extension RFC_1123.Domain: Hashable {
     }
 }
 
-extension RFC_1123.Domain: UInt8.ASCII.RawRepresentable {}
+extension RFC_1123.Domain: Binary.ASCII.RawRepresentable {}
 
 extension RFC_1123.Domain: CustomStringConvertible {}
 
-extension RFC_1123.Domain: UInt8.ASCII.Serializable {
+extension RFC_1123.Domain: Binary.ASCII.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         ascii domain: Self,
         into buffer: inout Buffer
@@ -185,11 +185,10 @@ extension RFC_1123.Domain: UInt8.ASCII.Serializable {
             }
         }
 
-        // RFC 1123 hostname-level constraint:
-        // "at least the highest-level component label will be alphabetic"
+        // RFC 1123 Section 2.1:
+        // "the highest-level component label will be alphabetic"
         if let tld = labels.last {
-            let firstByte = tld.rawValue.utf8.first!
-            guard firstByte.ascii.isLetter else {
+            guard tld.rawValue.utf8.allSatisfy({ $0.ascii.isLetter }) else {
                 throw Error.invalidTLD(tld.rawValue)
             }
         }
@@ -287,10 +286,10 @@ extension RFC_1123.Domain {
             throw Error.tooLong(name.count)
         }
 
-        // Validate TLD constraint
+        // RFC 1123 Section 2.1:
+        // "the highest-level component label will be alphabetic"
         if let tld = labels.last {
-            let firstByte = tld.rawValue.utf8.first!
-            guard firstByte.ascii.isLetter else {
+            guard tld.rawValue.utf8.allSatisfy({ $0.ascii.isLetter }) else {
                 throw Error.invalidTLD(tld.rawValue)
             }
         }

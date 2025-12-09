@@ -43,11 +43,11 @@ struct `RFC 1123 Host Tests` {
     }
 
     @Test
-    func `Successfully creates host with TLD ending with number`() throws {
-        // RFC 1123 only requires TLD to START with a letter, not end with one
-        let host = try RFC_1123.Domain("example.com123")
-        #expect(host.name == "example.com123")
-        #expect(host.tld?.rawValue == "com123")
+    func `Fails with invalid TLD ending with number`() throws {
+        // RFC 1123 Section 2.1: "the highest-level component label will be alphabetic"
+        #expect(throws: RFC_1123.Domain.Error.invalidTLD("com123")) {
+            _ = try RFC_1123.Domain("example.com123")
+        }
     }
 
     @Test
