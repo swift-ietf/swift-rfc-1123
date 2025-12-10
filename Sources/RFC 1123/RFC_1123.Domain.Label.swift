@@ -73,7 +73,7 @@ extension RFC_1123.Domain.Label: Hashable {
 
 // MARK: - Serializable
 
-extension RFC_1123.Domain.Label: UInt8.ASCII.Serializable {
+extension RFC_1123.Domain.Label: Binary.ASCII.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         ascii label: Self,
         into buffer: inout Buffer
@@ -169,6 +169,6 @@ extension RFC_1123.Domain.Label: UInt8.ASCII.Serializable {
 
 // MARK: - Protocol Conformances
 
-extension RFC_1123.Domain.Label: UInt8.ASCII.RawRepresentable {}
+extension RFC_1123.Domain.Label: Binary.ASCII.RawRepresentable {}
 extension RFC_1123.Domain.Label: RawRepresentable {}
 extension RFC_1123.Domain.Label: CustomStringConvertible {}
