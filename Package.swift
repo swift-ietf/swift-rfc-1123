@@ -10,7 +10,7 @@ extension Target.Dependency {
     static var rfc1123: Self { .target(name: .rfc1123) }
     static var rfc1035: Self { .product(name: "RFC 1035", package: "swift-rfc-1035") }
     static var standards: Self { .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions") }
-    static var incits41986: Self { .product(name: "INCITS 4 1986", package: "swift-incits-4-1986") }
+    static var incits41986: Self { .product(name: "ASCII", package: "swift-ascii") }
 }
 
 let package = Package(
@@ -28,7 +28,7 @@ let package = Package(
     dependencies: [
         .package(path: "../swift-rfc-1035"),
         .package(path: "../../swift-primitives/swift-standard-library-extensions"),
-        .package(path: "../swift-incits-4-1986"),
+        .package(path: "../../swift-foundations/swift-ascii"),
     ],
     targets: [
         .target(

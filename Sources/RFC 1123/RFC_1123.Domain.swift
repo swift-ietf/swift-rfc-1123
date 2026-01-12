@@ -5,7 +5,7 @@
 //  Created by Coen ten Thije Boonkkamp on 21/11/2025.
 //
 
-public import INCITS_4_1986
+public import ASCII
 import RFC_1035
 
 extension RFC_1123 {
