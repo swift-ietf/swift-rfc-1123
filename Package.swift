@@ -20,31 +20,25 @@ let package = Package(
         .iOS(.v26),
         .tvOS(.v26),
         .watchOS(.v26),
-        .visionOS(.v26),
+        .visionOS(.v26)
     ],
     products: [
-        .library(name: .rfc1123, targets: [.rfc1123])
+        .library(name: "RFC 1123", targets: ["RFC 1123"])
     ],
     dependencies: [
         .package(path: "../swift-rfc-1035"),
         .package(path: "../../swift-primitives/swift-standard-library-extensions"),
-        .package(path: "../../swift-foundations/swift-ascii"),
+        .package(path: "../../swift-foundations/swift-ascii")
     ],
     targets: [
         .target(
-            name: .rfc1123,
+            name: "RFC 1123",
             dependencies: [
                 .rfc1035,
                 .standards,
-                .incits41986,
+                .incits41986
             ]
-        ),
-        .testTarget(
-            name: .rfc1123.tests,
-            dependencies: [
-                .rfc1123
-            ]
-        ),
+        )
     ],
     swiftLanguageModes: [.v6]
 )
