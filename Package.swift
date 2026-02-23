@@ -2,6 +2,8 @@
 
 import PackageDescription
 
+
+
 extension String {
     static let rfc1123: Self = "RFC 1123"
 }
@@ -44,3 +46,19 @@ let package = Package(
 )
 
 extension String { var tests: Self { self + " Tests" } }
+
+for target in package.targets where ![.system, .binary, .plugin, .macro].contains(target.type) {
+    let ecosystem: [SwiftSetting] = [
+        .strictMemorySafety(),
+        .enableUpcomingFeature("ExistentialAny"),
+        .enableUpcomingFeature("InternalImportsByDefault"),
+        .enableUpcomingFeature("MemberImportVisibility"),
+        .enableExperimentalFeature("Lifetimes"),
+        .enableExperimentalFeature("SuppressedAssociatedTypes"),
+        .enableExperimentalFeature("SuppressedAssociatedTypesWithDefaults"),
+    ]
+
+    let package: [SwiftSetting] = []
+
+    target.swiftSettings = (target.swiftSettings ?? []) + ecosystem + package
+}
