@@ -5,7 +5,7 @@
 //  Created by Coen ten Thije Boonkkamp on 21/11/2025.
 //
 
-public import ASCII
+public import ASCII_Serializer_Primitives
 import RFC_1035
 
 extension RFC_1123 {

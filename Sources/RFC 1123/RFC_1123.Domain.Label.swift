@@ -5,7 +5,7 @@
 //  Created by Coen ten Thije Boonkkamp on 21/11/2025.
 //
 
-public import ASCII
+public import ASCII_Serializer_Primitives
 
 extension RFC_1123.Domain {
     /// RFC 1123 compliant host label
