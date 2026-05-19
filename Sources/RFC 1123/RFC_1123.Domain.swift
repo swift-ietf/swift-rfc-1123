@@ -97,8 +97,8 @@ extension RFC_1123.Domain: Binary.ASCII.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         ascii domain: Self,
         into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
-        buffer.append(contentsOf: domain.rawValue.utf8)
+    ) where Buffer.Element == Byte {
+        buffer.append(contentsOf: Array<Byte>(domain.rawValue.utf8))
     }
 
     /// Parses a host name from canonical byte representation (CANONICAL PRIMITIVE)
@@ -136,7 +136,7 @@ extension RFC_1123.Domain: Binary.ASCII.Serializable {
     /// - Parameter bytes: The ASCII byte representation of the domain
     /// - Throws: `RFC_1123.Domain.Error` if the bytes are malformed
     public init<Bytes: Collection>(ascii bytes: Bytes, in context: Void) throws(Error)
-    where Bytes.Element == UInt8 {
+    where Bytes.Element == Byte {
         guard !bytes.isEmpty else {
             throw Error.empty
         }
@@ -152,7 +152,7 @@ extension RFC_1123.Domain: Binary.ASCII.Serializable {
 
         while i != bytes.endIndex {
             let byte = bytes[i]
-            if byte == .ascii.period {
+            if byte == ASCII.Code.period {
                 let segment = bytes[currentStart..<i]
                 if !segment.isEmpty {
                     labelSlices.append(segment)
@@ -188,7 +188,7 @@ extension RFC_1123.Domain: Binary.ASCII.Serializable {
         // RFC 1123 Section 2.1:
         // "the highest-level component label will be alphabetic"
         if let tld = labels.last {
-            guard tld.rawValue.utf8.allSatisfy({ $0.ascii.isLetter }) else {
+            guard tld.rawValue.utf8.allSatisfy({ ASCII.Code(Byte($0)).isLetter }) else {
                 throw Error.invalidTLD(tld.rawValue)
             }
         }
@@ -227,7 +227,7 @@ extension RFC_1123.Domain {
         var newLabels: [Label] = []
         for component in components {
             do {
-                newLabels.append(try Label(ascii: Array(component.utf8)))
+                newLabels.append(try Label(ascii: Array<Byte>(component.utf8)))
             } catch {
                 throw Error.invalidLabel(error)
             }
@@ -289,7 +289,7 @@ extension RFC_1123.Domain {
         // RFC 1123 Section 2.1:
         // "the highest-level component label will be alphabetic"
         if let tld = labels.last {
-            guard tld.rawValue.utf8.allSatisfy({ $0.ascii.isLetter }) else {
+            guard tld.rawValue.utf8.allSatisfy({ ASCII.Code(Byte($0)).isLetter }) else {
                 throw Error.invalidTLD(tld.rawValue)
             }
         }

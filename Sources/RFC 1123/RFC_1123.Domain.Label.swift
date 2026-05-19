@@ -77,8 +77,8 @@ extension RFC_1123.Domain.Label: Binary.ASCII.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         ascii label: Self,
         into buffer: inout Buffer
-    ) where Buffer.Element == UInt8 {
-        buffer.append(contentsOf: label.rawValue.utf8)
+    ) where Buffer.Element == Byte {
+        buffer.append(contentsOf: Array<Byte>(label.rawValue.utf8))
     }
 
     /// Parses a host label from canonical byte representation (CANONICAL PRIMITIVE)
@@ -115,7 +115,7 @@ extension RFC_1123.Domain.Label: Binary.ASCII.Serializable {
     /// - Parameter bytes: The ASCII byte representation of the label
     /// - Throws: `RFC_1123.Domain.Label.Error` if the bytes are malformed
     public init<Bytes: Collection>(ascii bytes: Bytes, in context: Void) throws(Error)
-    where Bytes.Element == UInt8 {
+    where Bytes.Element == Byte {
         guard let firstByte = bytes.first else {
             throw Error.empty
         }
@@ -127,7 +127,8 @@ extension RFC_1123.Domain.Label: Binary.ASCII.Serializable {
             count += 1
             lastByte = byte
 
-            let valid = byte.ascii.isLetter || byte.ascii.isDigit || byte == .ascii.hyphen
+            let code = ASCII.Code(byte)
+            let valid = code.isLetter || code.isDigit || byte == ASCII.Code.hyphen
             guard valid else {
                 let string = String(decoding: bytes, as: UTF8.self)
                 throw Error.invalidCharacters(
@@ -144,7 +145,8 @@ extension RFC_1123.Domain.Label: Binary.ASCII.Serializable {
         }
 
         // RFC 1123: Can start with letter or digit
-        guard firstByte.ascii.isLetter || firstByte.ascii.isDigit else {
+        let firstCode = ASCII.Code(firstByte)
+        guard firstCode.isLetter || firstCode.isDigit else {
             let string = String(decoding: bytes, as: UTF8.self)
             throw Error.invalidCharacters(
                 string,
@@ -154,7 +156,8 @@ extension RFC_1123.Domain.Label: Binary.ASCII.Serializable {
         }
 
         // Must end with a letter or digit
-        guard lastByte.ascii.isLetter || lastByte.ascii.isDigit else {
+        let lastCode = ASCII.Code(lastByte)
+        guard lastCode.isLetter || lastCode.isDigit else {
             let string = String(decoding: bytes, as: UTF8.self)
             throw Error.invalidCharacters(
                 string,

@@ -29,7 +29,7 @@ extension RFC_1123.Domain.Label {
         case tooLong(_ length: Int, label: String)
 
         /// Label contains invalid characters
-        case invalidCharacters(_ label: String, byte: UInt8, reason: String)
+        case invalidCharacters(_ label: String, byte: Byte, reason: String)
     }
 }
 
