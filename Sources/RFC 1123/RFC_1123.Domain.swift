@@ -151,8 +151,8 @@ extension RFC_1123.Domain: Binary.ASCII.Serializable {
         var i = currentStart
 
         while i != bytes.endIndex {
-            let byte = bytes[i]
-            if byte == ASCII.Code.period {
+            let code = ASCII.Code(bytes[i])
+            if code == ASCII.Code.period {
                 let segment = bytes[currentStart..<i]
                 if !segment.isEmpty {
                     labelSlices.append(segment)

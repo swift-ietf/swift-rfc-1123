@@ -128,7 +128,7 @@ extension RFC_1123.Domain.Label: Binary.ASCII.Serializable {
             lastByte = byte
 
             let code = ASCII.Code(byte)
-            let valid = code.isLetter || code.isDigit || byte == ASCII.Code.hyphen
+            let valid = code.isLetter || code.isDigit || code == ASCII.Code.hyphen
             guard valid else {
                 let string = String(decoding: bytes, as: UTF8.self)
                 throw Error.invalidCharacters(
