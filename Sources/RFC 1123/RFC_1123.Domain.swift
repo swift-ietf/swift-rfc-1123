@@ -151,8 +151,10 @@ extension RFC_1123.Domain: Binary.ASCII.Serializable {
         var i = currentStart
 
         while i != bytes.endIndex {
-            let code = ASCII.Code(bytes[i])
-            if code == ASCII.Code.period {
+            // Period detection is a pure equality check — compare bytes directly.
+            // A non-ASCII byte is simply not a period; it flows into the current
+            // label, where Label(ascii:) yields the proper invalid-label error.
+            if bytes[i] == ASCII.Code.period.byte {
                 let segment = bytes[currentStart..<i]
                 if !segment.isEmpty {
                     labelSlices.append(segment)
@@ -188,7 +190,9 @@ extension RFC_1123.Domain: Binary.ASCII.Serializable {
         // RFC 1123 Section 2.1:
         // "the highest-level component label will be alphabetic"
         if let tld = labels.last {
-            guard tld.rawValue.utf8.allSatisfy({ ASCII.Code(Byte($0)).isLetter }) else {
+            // A non-ASCII byte cannot be an ASCII letter; try? maps it to nil so
+            // the predicate fails and a non-letter TLD raises invalidTLD.
+            guard tld.rawValue.utf8.allSatisfy({ (try? ASCII.Code(Byte($0)))?.isLetter == true }) else {
                 throw Error.invalidTLD(tld.rawValue)
             }
         }
@@ -289,7 +293,9 @@ extension RFC_1123.Domain {
         // RFC 1123 Section 2.1:
         // "the highest-level component label will be alphabetic"
         if let tld = labels.last {
-            guard tld.rawValue.utf8.allSatisfy({ ASCII.Code(Byte($0)).isLetter }) else {
+            // A non-ASCII byte cannot be an ASCII letter; try? maps it to nil so
+            // the predicate fails and a non-letter TLD raises invalidTLD.
+            guard tld.rawValue.utf8.allSatisfy({ (try? ASCII.Code(Byte($0)))?.isLetter == true }) else {
                 throw Error.invalidTLD(tld.rawValue)
             }
         }
