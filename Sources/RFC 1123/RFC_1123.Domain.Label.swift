@@ -6,6 +6,8 @@
 //
 
 public import ASCII_Serializer_Primitives
+public import Binary_Serializable_Primitives
+public import Parseable_ASCII_Primitives
 
 extension RFC_1123.Domain {
     /// RFC 1123 compliant host label
@@ -73,12 +75,44 @@ extension RFC_1123.Domain.Label: Hashable {
 
 // MARK: - Serializable
 
-extension RFC_1123.Domain.Label: Binary.ASCII.Serializable {
+extension RFC_1123.Domain.Label: Swift.RawRepresentable, Serializable, ASCII.Serializable, Binary.Serializable {
+    /// Creates a label by validating `rawValue`, or `nil` if it is not a valid RFC 1123 label.
+    ///
+    /// Re-provides the `Swift.RawRepresentable` requirement (previously inherited
+    /// from the retired combined ASCII serializable protocol).
+    public init?(rawValue: String) {
+        try? self.init(rawValue)
+    }
+
+    /// Serializes `value` as ASCII bytes into `buffer`.
+    ///
+    /// Explicit `Binary.Serializable` witness: disambiguates the two
+    /// constraint-incomparable `serialize(_:into:)` defaults (the RawRepresentable
+    /// default vs the W0 ASCII bridge) — a conformer-declared member out-ranks both.
+    /// The bytes derive from the free `[ASCII.Code]` serializer supplied by the
+    /// `String`-RawRepresentable default (`.serialized`).
     public static func serialize<Buffer: RangeReplaceableCollection>(
-        ascii label: Self,
+        _ value: Self,
         into buffer: inout Buffer
     ) where Buffer.Element == Byte {
-        buffer.append(contentsOf: Array<Byte>(label.rawValue.utf8))
+        buffer.append(contentsOf: value.serialized)
+    }
+}
+
+extension RFC_1123.Domain.Label: CustomStringConvertible {
+    /// The label's ASCII serialization decoded as a `String`.
+    public var description: String {
+        String(decoding: serialized, as: UTF8.self)
+    }
+}
+
+extension RFC_1123.Domain.Label: ASCII.Parseable {
+    /// Creates a label by validating `string`'s UTF-8 bytes as ASCII.
+    ///
+    /// Re-provides the string convenience initializer (previously inherited from
+    /// the retired combined ASCII serializable protocol, Void context).
+    public init(_ string: some StringProtocol) throws(Error) {
+        try self.init(ascii: [Byte](string.utf8))
     }
 
     /// Parses a host label from canonical byte representation (CANONICAL PRIMITIVE)
@@ -114,7 +148,7 @@ extension RFC_1123.Domain.Label: Binary.ASCII.Serializable {
     ///
     /// - Parameter bytes: The ASCII byte representation of the label
     /// - Throws: `RFC_1123.Domain.Label.Error` if the bytes are malformed
-    public init<Bytes: Collection>(ascii bytes: Bytes, in context: Void) throws(Error)
+    public init<Bytes: Collection>(ascii bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         guard let firstByte = bytes.first else {
             throw Error.empty
@@ -207,8 +241,3 @@ extension RFC_1123.Domain.Label: Binary.ASCII.Serializable {
     }
 }
 
-// MARK: - Protocol Conformances
-
-extension RFC_1123.Domain.Label: Binary.ASCII.RawRepresentable {}
-extension RFC_1123.Domain.Label: RawRepresentable {}
-extension RFC_1123.Domain.Label: CustomStringConvertible {}

@@ -13,6 +13,7 @@ extension Target.Dependency {
     static var rfc1035: Self { .product(name: "RFC 1035", package: "swift-rfc-1035") }
     static var standards: Self { .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions") }
     static var incits41986: Self { .product(name: "ASCII Serializer Primitives", package: "swift-ascii-serializer-primitives") }
+    static var asciiParser: Self { .product(name: "Parseable ASCII Primitives", package: "swift-ascii-parser-primitives") }
 }
 
 let package = Package(
@@ -30,7 +31,8 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/swift-ietf/swift-rfc-1035.git", branch: "main"),
         .package(url: "https://github.com/swift-primitives/swift-standard-library-extensions.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-ascii-serializer-primitives.git", branch: "main")
+        .package(url: "https://github.com/swift-primitives/swift-ascii-serializer-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-ascii-parser-primitives.git", branch: "main")
     ],
     targets: [
         .target(
@@ -38,7 +40,8 @@ let package = Package(
             dependencies: [
                 .rfc1035,
                 .standards,
-                .incits41986
+                .incits41986,
+                .asciiParser
             ]
         ),
         .testTarget(
