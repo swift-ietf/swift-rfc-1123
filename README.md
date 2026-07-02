@@ -1,6 +1,6 @@
 # Swift RFC 1123
 
-[![CI](https://github.com/swift-standards/swift-rfc-1123/workflows/CI/badge.svg)](https://github.com/swift-standards/swift-rfc-1123/actions/workflows/ci.yml)
+[![CI](https://github.com/swift-ietf/swift-rfc-1123/workflows/CI/badge.svg)](https://github.com/swift-ietf/swift-rfc-1123/actions/workflows/ci.yml)
 ![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
 
 Swift implementation of RFC 1123: Requirements for Internet Hosts - Application and Support.
@@ -27,7 +27,7 @@ Add swift-rfc-1123 to your package dependencies:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/swift-standards/swift-rfc-1123.git", from: "0.1.0")
+    .package(url: "https://github.com/swift-ietf/swift-rfc-1123.git", from: "0.5.4")
 ]
 ```
 
@@ -193,7 +193,7 @@ let decoded = try JSONDecoder().decode(Domain.self, from: encoded)
 ## Related Packages
 
 ### Dependencies
-- [swift-rfc-1035](https://github.com/swift-standards/swift-rfc-1035) - RFC 1035 domain names (stricter predecessor)
+- [swift-rfc-1035](https://github.com/swift-ietf/swift-rfc-1035) - RFC 1035 domain names (stricter predecessor)
 
 ## Requirements
 
