@@ -14,6 +14,7 @@ extension RFC_1123 {
     /// RFC 1123 compliant host name
     ///
     /// Represents a fully qualified host name as defined by RFC 1123 Section 2.1.
+    ///
     /// RFC 1123 relaxes RFC 1035's constraint that labels must start with a letter,
     /// allowing labels to begin with digits.
     ///
@@ -29,9 +30,9 @@ extension RFC_1123 {
     /// > at least the highest-level component label will be alphabetic.
     ///
     /// Key differences from RFC 1035:
-    /// - Labels CAN start with digits (e.g., "3com" is valid)
+    /// - Labels CAN start with digits (such as "3com", which is valid)
     /// - The highest-level label (TLD) MUST start with a letter
-    /// - All other RFC 1035 rules apply (max 63 chars per label, etc.)
+    /// - All other RFC 1035 rules apply (max 63 chars per label, and so on)
     ///
     /// ## Example
     ///
@@ -113,6 +114,7 @@ extension RFC_1123.Domain: Swift.RawRepresentable, ASCII.Serializable, Binary.Se
     /// Explicit `Binary.Serializable` witness: disambiguates the two
     /// constraint-incomparable `serialize(_:into:)` defaults (the RawRepresentable
     /// default vs the W0 ASCII bridge) — a conformer-declared member out-ranks both.
+    ///
     /// The bytes derive from the free `[ASCII.Code]` serializer supplied by the
     /// `String`-RawRepresentable default (`.serialized`).
     public static func serialize<Buffer: RangeReplaceableCollection>(
@@ -230,7 +232,8 @@ extension RFC_1123.Domain: ASCII.Parseable {
         if let tld = labels.last {
             // A non-ASCII byte cannot be an ASCII letter; try? maps it to nil so
             // the predicate fails and a non-letter TLD raises invalidTLD.
-            guard tld.rawValue.utf8.allSatisfy({ (try? ASCII.Code(Byte($0)))?.isLetter == true }) else {
+            guard tld.rawValue.utf8.allSatisfy({ (try? ASCII.Code(Byte($0)))?.isLetter == true })
+            else {
                 throw Error.invalidTLD(tld.rawValue)
             }
         }
@@ -269,7 +272,7 @@ extension RFC_1123.Domain {
         var newLabels: [Label] = []
         for component in components {
             do {
-                newLabels.append(try Label(ascii: Array<Byte>(component.utf8)))
+                newLabels.append(try Label(ascii: [Byte](component.utf8)))
             } catch {
                 throw Error.invalidLabel(error)
             }
@@ -333,7 +336,8 @@ extension RFC_1123.Domain {
         if let tld = labels.last {
             // A non-ASCII byte cannot be an ASCII letter; try? maps it to nil so
             // the predicate fails and a non-letter TLD raises invalidTLD.
-            guard tld.rawValue.utf8.allSatisfy({ (try? ASCII.Code(Byte($0)))?.isLetter == true }) else {
+            guard tld.rawValue.utf8.allSatisfy({ (try? ASCII.Code(Byte($0)))?.isLetter == true })
+            else {
                 throw Error.invalidTLD(tld.rawValue)
             }
         }

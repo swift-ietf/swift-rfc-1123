@@ -97,6 +97,7 @@ extension RFC_1123.Domain.Label: Swift.RawRepresentable, ASCII.Serializable, Bin
     /// Explicit `Binary.Serializable` witness: disambiguates the two
     /// constraint-incomparable `serialize(_:into:)` defaults (the RawRepresentable
     /// default vs the W0 ASCII bridge) — a conformer-declared member out-ranks both.
+    ///
     /// The bytes derive from the free `[ASCII.Code]` serializer supplied by the
     /// `String`-RawRepresentable default (`.serialized`).
     public static func serialize<Buffer: RangeReplaceableCollection>(
@@ -248,4 +249,3 @@ extension RFC_1123.Domain.Label: ASCII.Parseable {
         self.init(__unchecked: (), rawValue: String(decoding: bytes, as: UTF8.self))
     }
 }
-

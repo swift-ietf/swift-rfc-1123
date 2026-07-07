@@ -15,7 +15,7 @@
 /// with digits, making it more suitable for modern hostname validation.
 ///
 /// Key differences from RFC 1035:
-/// - Labels CAN start with digits (e.g., "3com.com")
+/// - Labels CAN start with digits (such as "3com.com")
 /// - TLDs MUST still start with a letter
 /// - All other RFC 1035 rules apply
 ///
