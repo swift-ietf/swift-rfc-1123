@@ -220,7 +220,7 @@ extension RFC_1123.Domain: ASCII.Parseable {
         labels.reserveCapacity(labelSlices.count)
 
         for slice in labelSlices {
-            do {
+            do throws(Label.Error) {
                 labels.append(try Label(ascii: slice))
             } catch {
                 throw Error.invalidLabel(error)
@@ -271,7 +271,7 @@ extension RFC_1123.Domain {
     public func addingSubdomain(_ components: [String]) throws(Error) -> RFC_1123.Domain {
         var newLabels: [Label] = []
         for component in components {
-            do {
+            do throws(Label.Error) {
                 newLabels.append(try Label(ascii: [Byte](component.utf8)))
             } catch {
                 throw Error.invalidLabel(error)
@@ -349,12 +349,12 @@ extension RFC_1123.Domain {
     public static func root(_ sld: String, _ tld: String) throws(Error) -> RFC_1123.Domain {
         let sldLabel: Label
         let tldLabel: Label
-        do {
+        do throws(Label.Error) {
             sldLabel = try Label(sld)
         } catch {
             throw Error.invalidLabel(error)
         }
-        do {
+        do throws(Label.Error) {
             tldLabel = try Label(tld)
         } catch {
             throw Error.invalidLabel(error)
@@ -370,7 +370,7 @@ extension RFC_1123.Domain {
 
         var labels: [Label] = []
         for label in components.reversed() {
-            do {
+            do throws(Label.Error) {
                 labels.append(try Label(label))
             } catch {
                 throw Error.invalidLabel(error)
