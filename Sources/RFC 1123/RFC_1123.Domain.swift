@@ -48,7 +48,7 @@ extension RFC_1123 {
     ///
     /// > Host software MUST handle host names of up to 63 characters and
     /// > SHOULD handle host names of up to 255 characters.
-    public struct Domain: Sendable, Codable {
+    public struct Domain: Sendable {
         /// The domain name as a string
         public let rawValue: String
 
@@ -122,6 +122,33 @@ extension RFC_1123.Domain: Swift.RawRepresentable, ASCII.Serializable, Binary.Se
         into buffer: inout Buffer
     ) where Buffer.Element == Byte {
         buffer.append(contentsOf: value.serialized)
+    }
+}
+
+extension RFC_1123.Domain: Codable {
+    /// Decodes a domain from its canonical string form, validating it.
+    ///
+    /// Decoding goes through the validating parser, so a payload that is not a
+    /// valid RFC 1123 domain fails with `DecodingError.dataCorrupted`.
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let string = try container.decode(String.self)
+        do {
+            try self.init(string)
+        } catch {
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Invalid RFC 1123 domain: \(error.description)"
+                )
+            )
+        }
+    }
+
+    /// Encodes the domain as its canonical string form.
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
     }
 }
 

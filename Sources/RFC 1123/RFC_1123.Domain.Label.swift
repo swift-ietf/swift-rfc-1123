@@ -33,7 +33,7 @@ extension RFC_1123.Domain {
     /// let label = try RFC_1123.Domain.Label("3com")  // Valid
     /// let label2 = try RFC_1123.Domain.Label("com")  // Valid
     /// ```
-    public struct Label: Sendable, Codable {
+    public struct Label: Sendable {
         /// The label value
         public let rawValue: String
 
@@ -105,6 +105,33 @@ extension RFC_1123.Domain.Label: Swift.RawRepresentable, ASCII.Serializable, Bin
         into buffer: inout Buffer
     ) where Buffer.Element == Byte {
         buffer.append(contentsOf: value.serialized)
+    }
+}
+
+extension RFC_1123.Domain.Label: Codable {
+    /// Decodes a label from its canonical string form, validating it.
+    ///
+    /// Decoding goes through the validating parser, so a payload that is not a
+    /// valid RFC 1123 label fails with `DecodingError.dataCorrupted`.
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let string = try container.decode(String.self)
+        do {
+            try self.init(string)
+        } catch {
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Invalid RFC 1123 label: \(error.description)"
+                )
+            )
+        }
+    }
+
+    /// Encodes the label as its canonical string form.
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
     }
 }
 
