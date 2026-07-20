@@ -195,22 +195,18 @@ extension RFC_1123.Domain: ASCII.Parseable {
             // A non-ASCII byte is simply not a period; it flows into the current
             // label, where Label(ascii:) yields the proper invalid-label error.
             if bytes[i] == ASCII.Code.period.byte {
-                let segment = bytes[currentStart..<i]
-                if !segment.isEmpty {
-                    labelSlices.append(segment)
-                }
+                // Empty segments are NOT dropped: ".com", "com.", and "a..b"
+                // must be rejected, not silently normalized. The empty slice
+                // flows into Label(ascii:), which throws Label.Error.empty.
+                labelSlices.append(bytes[currentStart..<i])
                 currentStart = bytes.index(after: i)
             }
             i = bytes.index(after: i)
         }
 
-        if currentStart != bytes.endIndex {
-            labelSlices.append(bytes[currentStart..<bytes.endIndex])
-        }
-
-        guard !labelSlices.isEmpty else {
-            throw Error.empty
-        }
+        // The final segment is appended unconditionally: a trailing dot leaves
+        // an empty final segment, which Label(ascii:) rejects as empty.
+        labelSlices.append(bytes[currentStart..<bytes.endIndex])
 
         guard labelSlices.count <= Limits.maxLabels else {
             throw Error.tooManyLabels
