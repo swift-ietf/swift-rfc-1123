@@ -228,11 +228,15 @@ extension RFC_1123.Domain: ASCII.Parseable {
         }
 
         // RFC 1123 Section 2.1:
-        // "the highest-level component label will be alphabetic"
+        // "at least the highest-level component label will be alphabetic"
+        // Enforced as the documented rule: the TLD must START with a letter
+        // (distinguishing host names from dotted-decimal IP addresses, and
+        // admitting punycode TLDs such as "xn--p1ai").
         if let tld = labels.last {
             // A non-ASCII byte cannot be an ASCII letter; try? maps it to nil so
-            // the predicate fails and a non-letter TLD raises invalidTLD.
-            guard tld.rawValue.utf8.allSatisfy({ (try? ASCII.Code(Byte($0)))?.isLetter == true })
+            // the predicate fails and a non-letter-initial TLD raises invalidTLD.
+            guard let first = tld.rawValue.utf8.first,
+                (try? ASCII.Code(Byte(first)))?.isLetter == true
             else {
                 throw Error.invalidTLD(tld.rawValue)
             }
@@ -332,11 +336,15 @@ extension RFC_1123.Domain {
         }
 
         // RFC 1123 Section 2.1:
-        // "the highest-level component label will be alphabetic"
+        // "at least the highest-level component label will be alphabetic"
+        // Enforced as the documented rule: the TLD must START with a letter
+        // (distinguishing host names from dotted-decimal IP addresses, and
+        // admitting punycode TLDs such as "xn--p1ai").
         if let tld = labels.last {
             // A non-ASCII byte cannot be an ASCII letter; try? maps it to nil so
-            // the predicate fails and a non-letter TLD raises invalidTLD.
-            guard tld.rawValue.utf8.allSatisfy({ (try? ASCII.Code(Byte($0)))?.isLetter == true })
+            // the predicate fails and a non-letter-initial TLD raises invalidTLD.
+            guard let first = tld.rawValue.utf8.first,
+                (try? ASCII.Code(Byte(first)))?.isLetter == true
             else {
                 throw Error.invalidTLD(tld.rawValue)
             }
