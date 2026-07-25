@@ -1,7 +1,7 @@
 # Swift RFC 1123
 
-[![CI](https://github.com/swift-ietf/swift-rfc-1123/workflows/CI/badge.svg)](https://github.com/swift-ietf/swift-rfc-1123/actions/workflows/ci.yml)
 ![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
+[![CI](https://github.com/swift-ietf/swift-rfc-1123/workflows/CI/badge.svg)](https://github.com/swift-ietf/swift-rfc-1123/actions/workflows/ci.yml)
 
 Swift implementation of RFC 1123: Requirements for Internet Hosts - Application and Support.
 
