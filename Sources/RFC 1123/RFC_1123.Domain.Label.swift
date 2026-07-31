@@ -81,7 +81,11 @@ extension RFC_1123.Domain.Label: Swift.RawRepresentable, ASCII.Serializable, Bin
     /// Re-provides the `Swift.RawRepresentable` requirement (previously inherited
     /// from the retired combined ASCII serializable protocol).
     public init?(rawValue: String) {
-        try? self.init(rawValue)
+        do throws(Error) {
+            try self.init(rawValue)
+        } catch {
+            return nil
+        }
     }
 
     /// Serializes `value` as ASCII bytes into `buffer` (own `ASCII.Serializable` verb).
@@ -113,7 +117,12 @@ extension RFC_1123.Domain.Label: Codable {
     ///
     /// Decoding goes through the validating parser, so a payload that is not a
     /// valid RFC 1123 label fails with `DecodingError.dataCorrupted`.
-    public init(from decoder: any Decoder) throws {
+    ///
+    /// Exact `Decodable` protocol requirement signature (stdlib); can express
+    /// neither a generic parameter nor `throws(E)`.
+    public init(
+        from decoder: any Decoder  // swiftlint:disable:this no_any_protocol_existential
+    ) throws {  // swiftlint:disable:this typed_throws_required
         let container = try decoder.singleValueContainer()
         let string = try container.decode(String.self)
         do {
@@ -129,7 +138,12 @@ extension RFC_1123.Domain.Label: Codable {
     }
 
     /// Encodes the label as its canonical string form.
-    public func encode(to encoder: any Encoder) throws {
+    ///
+    /// Exact `Encodable` protocol requirement signature (stdlib); can express
+    /// neither a generic parameter nor `throws(E)`.
+    public func encode(
+        to encoder: any Encoder  // swiftlint:disable:this no_any_protocol_existential
+    ) throws {  // swiftlint:disable:this typed_throws_required
         var container = encoder.singleValueContainer()
         try container.encode(rawValue)
     }
