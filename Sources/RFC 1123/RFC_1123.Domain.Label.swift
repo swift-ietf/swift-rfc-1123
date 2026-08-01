@@ -198,7 +198,7 @@ extension RFC_1123.Domain.Label: ASCII.Parseable {
     ///
     /// - Parameter bytes: The ASCII byte representation of the label
     /// - Throws: `RFC_1123.Domain.Label.Error` if the bytes are malformed
-    public init<Bytes: Collection>(ascii bytes: Bytes) throws(Error)
+    public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         guard let firstByte = bytes.first else {
             throw Error.empty
