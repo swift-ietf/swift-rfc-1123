@@ -1,18 +1,9 @@
-//
-//  RFC_1123.Domain Edge Cases.swift
-//  swift-rfc-1123
-//
-//  Fable-448 regression tests (F-001, F-002, F-003).
-//
-
 import Foundation
 import RFC_1123
 import Testing
 
 extension RFC_1123.Domain {
     @Suite struct `Edge Case` {
-
-        // MARK: - F-001: TLD rule is starts-with-letter, not all-alphabetic
 
         @Test
         func `TLD starting with a letter may contain digits`() throws {
@@ -50,8 +41,6 @@ extension RFC_1123.Domain {
             }
         }
 
-        // MARK: - F-002: empty labels must be rejected, not silently dropped
-
         @Test
         func `Leading dot is rejected`() throws {
             #expect(throws: RFC_1123.Domain.Error.invalidLabel(.empty)) {
@@ -86,8 +75,6 @@ extension RFC_1123.Domain {
                 _ = try RFC_1123.Domain(".")
             }
         }
-
-        // MARK: - F-003: Codable must validate on decode and use canonical string form
 
         @Test
         func `Encodes as a canonical JSON string`() throws {
@@ -124,8 +111,6 @@ extension RFC_1123.Domain {
 
 extension RFC_1123.Domain.Label {
     @Suite struct `Edge Case` {
-
-        // MARK: - F-003: Codable must validate on decode and use canonical string form
 
         @Test
         func `Encodes as a canonical JSON string`() throws {

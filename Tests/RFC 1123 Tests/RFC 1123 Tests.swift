@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  swift-web
-//
-//  Created by Coen ten Thije Boonkkamp on 28/12/2024.
-//
-
 import RFC_1123
 import Testing
 
@@ -44,8 +37,7 @@ extension RFC_1123.Domain {
 
         @Test
         func `Succeeds with TLD ending with number`() throws {
-            // RFC 1123 Section 2.1: the TLD must START with a letter; digits after
-            // the leading letter are allowed ("TLD can end with digit: Yes").
+
             let host = try RFC_1123.Domain("example.com123")
             #expect(host.tld! == "com123")
         }

@@ -1,10 +1,3 @@
-//
-//  ReadmeVerificationTests.swift
-//  swift-rfc-1123
-//
-//  Verifies that README code examples actually work
-//
-
 import RFC_1035
 import RFC_1123
 import Testing
@@ -53,19 +46,15 @@ struct `README Verification` {
     func `README Line 82-99: Domain hierarchy navigation`() throws {
         let host = try RFC_1123.Domain("api.v1.example.com")
 
-        // Get parent domain
         let parent = host.parent()
         #expect(parent?.name == "v1.example.com")
 
-        // Get root domain
         let root = host.root()
         #expect(root?.name == "example.com")
 
-        // Add subdomain
         let subdomain = try host.addingSubdomain("staging")
         #expect(subdomain.name == "staging.api.v1.example.com")
 
-        // Check subdomain relationships
         let parentDomain = try RFC_1123.Domain("example.com")
         let childDomain = try RFC_1123.Domain("api.example.com")
         #expect(childDomain.isSubdomain(of: parentDomain))
@@ -73,13 +62,12 @@ struct `README Verification` {
 
     @Test
     func `README Line 105-113: RFC 1035 interoperability`() throws {
-        // Convert RFC 1035 domain to RFC 1123
+
         let rfc1035Domain = try RFC_1035.Domain("example.com")
         let rfc1123Domain = try RFC_1123.Domain(rfc1035Domain)
 
         #expect(rfc1123Domain.name == "example.com")
 
-        // Convert RFC 1123 domain to RFC 1035
         let backToRFC1035 = try RFC_1035.Domain(rfc1123Domain)
 
         #expect(backToRFC1035.name == "example.com")
@@ -87,12 +75,11 @@ struct `README Verification` {
 
     @Test
     func `README Line 166-178: Error handling`() throws {
-        // Empty host
+
         #expect(throws: RFC_1123.Domain.Error.empty) {
             _ = try RFC_1123.Domain("")
         }
 
-        // Invalid TLD starting with number
         #expect(throws: RFC_1123.Domain.Error.self) {
             _ = try RFC_1123.Domain("example.123com")
         }
