@@ -1,6 +1,6 @@
-public import ASCII_Serializer_Primitives
-public import Binary_Serializable_Primitives
-public import Parseable_ASCII_Primitives
+public import ASCII_Serializer
+public import Binary_Serializable
+public import Parseable_ASCII
 import RFC_1035
 
 extension RFC_1123 {
