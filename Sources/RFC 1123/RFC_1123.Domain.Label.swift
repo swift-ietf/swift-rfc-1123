@@ -1,5 +1,7 @@
 public import ASCII_Serializer
 public import Binary_Serializable
+public import Byte
+internal import Byte_Standard_Library_Integration
 public import Parseable_ASCII
 
 extension RFC_1123.Domain {
@@ -94,7 +96,7 @@ extension RFC_1123.Domain.Label: CustomStringConvertible {
 extension RFC_1123.Domain.Label: ASCII.Parseable {
 
     public init(_ string: some StringProtocol) throws(Error) {
-        try self.init(ascii: [Byte](string.utf8))
+        try self.init(ascii: string.utf8.map(Byte.init(bitPattern:)))
     }
 
     public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(Error)

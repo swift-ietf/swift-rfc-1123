@@ -1,5 +1,7 @@
 public import ASCII_Serializer
 public import Binary_Serializable
+public import Byte
+internal import Byte_Standard_Library_Integration
 public import Parseable_ASCII
 import RFC_1035
 
@@ -99,7 +101,7 @@ extension RFC_1123.Domain: CustomStringConvertible {
 extension RFC_1123.Domain: ASCII.Parseable {
 
     public init(_ string: some StringProtocol) throws(Error) {
-        try self.init(ascii: [Byte](string.utf8))
+        try self.init(ascii: string.utf8.map(Byte.init(bitPattern:)))
     }
 
     public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(Error)
@@ -151,7 +153,7 @@ extension RFC_1123.Domain: ASCII.Parseable {
 
             let firstIsLetter: Bool
             do throws(ASCII.Code.Error) {
-                firstIsLetter = try ASCII.Code(Byte(first)).isLetter
+                firstIsLetter = try ASCII.Code(Byte(bitPattern: first)).isLetter
             } catch {
                 firstIsLetter = false
             }
@@ -192,7 +194,7 @@ extension RFC_1123.Domain {
         var newLabels: [Label] = []
         for component in components {
             do throws(Label.Error) {
-                newLabels.append(try Label(ascii: [Byte](component.utf8)))
+                newLabels.append(try Label(ascii: component.utf8.map(Byte.init(bitPattern:))))
             } catch {
                 throw Error.invalidLabel(error)
             }
@@ -253,7 +255,7 @@ extension RFC_1123.Domain {
 
             let firstIsLetter: Bool
             do throws(ASCII.Code.Error) {
-                firstIsLetter = try ASCII.Code(Byte(first)).isLetter
+                firstIsLetter = try ASCII.Code(Byte(bitPattern: first)).isLetter
             } catch {
                 firstIsLetter = false
             }

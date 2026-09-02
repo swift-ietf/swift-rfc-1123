@@ -1,3 +1,5 @@
+public import Byte
+
 extension RFC_1123.Domain.Label {
 
     public enum Error: Swift.Error, Sendable, Equatable {
@@ -21,7 +23,7 @@ extension RFC_1123.Domain.Label.Error: CustomStringConvertible {
 
         case .invalidCharacters(let label, let byte, let reason):
             return
-                "Domain label '\(label)' has invalid byte 0x\(String(byte, radix: 16)): \(reason)"
+                "Domain label '\(label)' has invalid byte 0x\(String(byte.bitPattern, radix: 16)): \(reason)"
         }
     }
 }

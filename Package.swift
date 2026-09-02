@@ -18,6 +18,12 @@ extension Target.Dependency {
     static var asciiParser: Self {
         .product(name: "Parseable ASCII", package: "swift-ascii-parser")
     }
+    static var byte: Self {
+        .product(name: "Byte", package: "swift-byte")
+    }
+    static var byteStandardLibraryIntegration: Self {
+        .product(name: "Byte Standard Library Integration", package: "swift-byte")
+    }
 }
 
 let package = Package(
@@ -46,6 +52,10 @@ let package = Package(
             url: "https://github.com/swift-molecules/swift-ascii-parser.git",
             branch: "main"
         ),
+        .package(
+            url: "https://github.com/swift-atoms/swift-byte.git",
+            branch: "main"
+        ),
     ],
     targets: [
         .target(
@@ -55,19 +65,20 @@ let package = Package(
                 .standards,
                 .incits41986,
                 .asciiParser,
+                .byte,
+                .byteStandardLibraryIntegration,
             ]
         ),
         .testTarget(
             name: "RFC 1123 Tests",
             dependencies: [
-                "RFC 1123"
+                "RFC 1123",
+                .byte,
             ]
         ),
     ],
     swiftLanguageModes: [.v6]
 )
-
-extension String { var tests: Self { self + " Tests" } }
 
 for target in package.targets where ![.system, .binary, .plugin, .macro].contains(target.type) {
     let ecosystem: [SwiftSetting] = [

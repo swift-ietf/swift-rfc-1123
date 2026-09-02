@@ -1,3 +1,4 @@
+import Byte
 import RFC_1035
 import RFC_1123
 import Testing
@@ -21,7 +22,7 @@ struct `RFC 1035 Bridge` {
         bytes.append(0x00)
         bytes.append(contentsOf: [0x00, 0x01])
         bytes.append(contentsOf: [0x00, 0x01])
-        let message = try RFC_1035.Message(binary: bytes.map(Byte.init))
+        let message = try RFC_1035.Message(binary: bytes.map(Byte.init(bitPattern:)))
         return try #require(message.questions.first).name
     }
 
