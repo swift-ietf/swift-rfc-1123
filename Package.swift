@@ -2,30 +2,6 @@
 
 import PackageDescription
 
-extension String {
-    static let rfc1123: Self = "RFC 1123"
-}
-
-extension Target.Dependency {
-    static var rfc1123: Self { .target(name: .rfc1123) }
-    static var rfc1035: Self { .product(name: "RFC 1035", package: "swift-rfc-1035") }
-    static var standards: Self {
-        .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions")
-    }
-    static var incits41986: Self {
-        .product(name: "ASCII Serializer", package: "swift-ascii-serializer")
-    }
-    static var asciiParser: Self {
-        .product(name: "Parseable ASCII", package: "swift-ascii-parser")
-    }
-    static var byte: Self {
-        .product(name: "Byte", package: "swift-byte")
-    }
-    static var byteStandardLibraryIntegration: Self {
-        .product(name: "Byte Standard Library Integration", package: "swift-byte")
-    }
-}
-
 let package = Package(
     name: "swift-rfc-1123",
     platforms: [
@@ -61,19 +37,19 @@ let package = Package(
         .target(
             name: "RFC 1123",
             dependencies: [
-                .rfc1035,
-                .standards,
-                .incits41986,
-                .asciiParser,
-                .byte,
-                .byteStandardLibraryIntegration,
+                .product(name: "RFC 1035", package: "swift-rfc-1035"),
+                .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions"),
+                .product(name: "ASCII Serializer", package: "swift-ascii-serializer"),
+                .product(name: "Parseable ASCII", package: "swift-ascii-parser"),
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Byte Standard Library Integration", package: "swift-byte"),
             ]
         ),
         .testTarget(
             name: "RFC 1123 Tests",
             dependencies: [
-                "RFC 1123",
-                .byte,
+                .target(name: "RFC 1123"),
+                .product(name: "Byte", package: "swift-byte"),
             ]
         ),
     ],
