@@ -1,104 +1,102 @@
 import RFC_1123
 import Testing
 
-extension RFC_1123.Domain {
-    @Suite struct Unit {
-        @Test
-        func `Successfully creates valid host`() throws {
-            let host = try RFC_1123.Domain("host.example.com")
-            #expect(host.name == "host.example.com")
-        }
+@Suite
+struct `RFC 1123 Tests` {
 
-        @Test
-        func `Successfully creates host with numeric labels`() throws {
-            let host = try RFC_1123.Domain("123.example.com")
-            #expect(host.name == "123.example.com")
-        }
+    @Test
+    func `a domain is built from its text form`() throws {
+        let domain = try RFC_1123.Domain("host.example.com")
 
-        @Test
-        func `Successfully creates host with mixed alphanumeric labels`() throws {
-            let host = try RFC_1123.Domain("host123.example456.com")
-            #expect(host.name == "host123.example456.com")
-        }
+        #expect(domain.name == "host.example.com")
+    }
 
-        @Test
-        func `Fails with empty host`() throws {
-            #expect(throws: RFC_1123.Domain.Error.empty) {
-                _ = try RFC_1123.Domain("")
-            }
-        }
+    @Test
+    func `a digit-led label is accepted`() throws {
+        let domain = try RFC_1123.Domain("123.example.com")
 
-        @Test
-        func `Fails with invalid TLD starting with number`() throws {
-            #expect(throws: RFC_1123.Domain.Error.invalidTLD("123com")) {
-                _ = try RFC_1123.Domain("example.123com")
-            }
-        }
+        #expect(domain.name == "123.example.com")
+    }
 
-        @Test
-        func `Succeeds with TLD ending with number`() throws {
+    @Test
+    func `mixed alphanumeric labels are accepted`() throws {
+        let domain = try RFC_1123.Domain("host123.example456.com")
 
-            let host = try RFC_1123.Domain("example.com123")
-            #expect(host.tld! == "com123")
-        }
+        #expect(domain.name == "host123.example456.com")
+    }
 
-        @Test
-        func `Fails with invalid label containing special characters`() throws {
-            #expect(throws: RFC_1123.Domain.Error.self) {
-                _ = try RFC_1123.Domain("host@name.com")
-            }
+    @Test
+    func `an empty domain is rejected`() throws {
+        #expect(throws: RFC_1123.Domain.Error.empty) {
+            _ = try RFC_1123.Domain("")
         }
+    }
 
-        @Test
-        func `Successfully gets TLD`() throws {
-            let host = try RFC_1123.Domain("example.com")
-            #expect(host.tld! == "com")
+    @Test
+    func `a digit-led top-level domain is rejected`() throws {
+        #expect(throws: RFC_1123.Domain.Error.invalidTLD("123com")) {
+            _ = try RFC_1123.Domain("example.123com")
         }
+    }
 
-        @Test
-        func `Successfully gets SLD`() throws {
-            let host = try RFC_1123.Domain("example.com")
-            #expect(host.sld! == "example")
-        }
+    @Test
+    func `a top-level domain ending in a digit is accepted`() throws {
+        let domain = try RFC_1123.Domain("example.com123")
 
-        @Test
-        func `Successfully detects subdomain relationship`() throws {
-            let parent = try RFC_1123.Domain("example.com")
-            let child = try RFC_1123.Domain("host.example.com")
-            #expect(child.isSubdomain(of: parent))
-        }
+        #expect(domain.tld! == "com123")
+    }
 
-        @Test
-        func `Successfully adds subdomain`() throws {
-            let host = try RFC_1123.Domain("example.com")
-            let subdomain = try host.addingSubdomain("host")
-            #expect(subdomain.name == "host.example.com")
+    @Test
+    func `a label with a special character is rejected`() throws {
+        #expect(throws: RFC_1123.Domain.Error.self) {
+            _ = try RFC_1123.Domain("host@name.com")
         }
+    }
 
-        @Test
-        func `Successfully gets parent domain`() throws {
-            let host = try RFC_1123.Domain("host.example.com")
-            let parent = host.parent()
-            #expect(parent?.name == "example.com")
-        }
+    @Test
+    func `a domain exposes its top-level and second-level labels`() throws {
+        let domain = try RFC_1123.Domain("example.com")
 
-        @Test
-        func `Successfully gets root domain`() throws {
-            let host = try RFC_1123.Domain("host.example.com")
-            let root = host.root()
-            #expect(root?.name == "example.com")
-        }
+        #expect(domain.tld! == "com")
+        #expect(domain.sld! == "example")
+    }
 
-        @Test
-        func `Successfully creates host from root components`() throws {
-            let host = try RFC_1123.Domain.root("example", "com")
-            #expect(host.name == "example.com")
-        }
+    @Test
+    func `a child domain is a subdomain of its parent`() throws {
+        let parent = try RFC_1123.Domain("example.com")
+        let child = try RFC_1123.Domain("host.example.com")
 
-        @Test
-        func `Successfully creates host from subdomain components`() throws {
-            let host = try RFC_1123.Domain.subdomain("com", "example", "host")
-            #expect(host.name == "host.example.com")
-        }
+        #expect(child.isSubdomain(of: parent))
+    }
+
+    @Test
+    func `a subdomain is added in front of the domain`() throws {
+        let domain = try RFC_1123.Domain("example.com")
+
+        let subdomain = try domain.addingSubdomain("host")
+
+        #expect(subdomain.name == "host.example.com")
+    }
+
+    @Test
+    func `a domain walks up to its parent and root`() throws {
+        let domain = try RFC_1123.Domain("api.v1.example.com")
+
+        #expect(domain.parent()?.name == "v1.example.com")
+        #expect(domain.root()?.name == "example.com")
+    }
+
+    @Test
+    func `a domain is built from root components`() throws {
+        let domain = try RFC_1123.Domain.root("example", "com")
+
+        #expect(domain.name == "example.com")
+    }
+
+    @Test
+    func `a domain is built from reversed subdomain components`() throws {
+        let domain = try RFC_1123.Domain.subdomain("com", "example", "host")
+
+        #expect(domain.name == "host.example.com")
     }
 }

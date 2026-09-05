@@ -3,3 +3,4 @@ builder:
   configs:
   - documentation_targets:
     - RFC 1123
+    - RFC 1123 Foundation Integration

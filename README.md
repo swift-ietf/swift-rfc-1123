@@ -19,7 +19,8 @@ The package enforces RFC 1123 rules which allow labels to begin with digits (unl
 - **RFC 1035 Interoperability**: Seamless conversion between RFC 1035 and RFC 1123 domains
 - **Type-Safe Labels**: Label type that enforces RFC 1123 rules at compile time
 - **Domain Hierarchy**: Navigate parent domains, root domains, and detect subdomain relationships
-- **Codable Support**: Full Codable conformance for JSON encoding/decoding
+- **Foundation Integration**: `Codable` conformances in the `RFC 1123 Foundation Integration` product
+- **Wire Coding**: byte-level parsing and serialization live in the sibling package [swift-rfc-1123-coder](https://github.com/swift-ietf/swift-rfc-1123-coder)
 
 ## Installation
 
@@ -27,7 +28,7 @@ Add swift-rfc-1123 to your package dependencies:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/swift-ietf/swift-rfc-1123.git", from: "0.5.4")
+    .package(url: "https://github.com/swift-ietf/swift-rfc-1123.git", branch: "main")
 ]
 ```
 
@@ -69,8 +70,8 @@ let host = try Domain.subdomain("com", "example", "api")
 let host = try Domain("api.example.com")
 
 // Access TLD and SLD
-print(host.tld?.stringValue)  // "com"
-print(host.sld?.stringValue)  // "example"
+print(host.tld?.rawValue)  // "com"
+print(host.sld?.rawValue)  // "example"
 
 // Get full hostname
 print(host.name)  // "api.example.com"
@@ -110,7 +111,7 @@ let rfc1035Domain = try RFC_1035.Domain("example.com")
 let rfc1123Domain = try RFC_1123.Domain(rfc1035Domain)
 
 // Convert RFC 1123 domain to RFC 1035
-let backToRFC1035 = try rfc1123Domain.toRFC1035()
+let backToRFC1035 = try RFC_1035.Domain(rfc1123Domain)
 ```
 
 ## Usage
@@ -121,16 +122,17 @@ The core `Domain` type is a struct that validates and stores hostnames:
 
 ```swift
 public struct Domain: Hashable, Sendable {
-    public init(_ string: String) throws
-    public init(labels: [String]) throws
+    public init(_ string: some StringProtocol) throws(Error)
+    public init(ascii bytes: some Collection<Byte>) throws(Error)
+    public init(labels: [Domain.Label]) throws(Error)
 
     public var name: String
     public var tld: Domain.Label?
     public var sld: Domain.Label?
 
     public func isSubdomain(of parent: Domain) -> Bool
-    public func addingSubdomain(_ components: [String]) throws -> Domain
-    public func addingSubdomain(_ components: String...) throws -> Domain
+    public func addingSubdomain(_ components: [String]) throws(Error) -> Domain
+    public func addingSubdomain(_ components: String...) throws(Error) -> Domain
     public func parent() -> Domain?
     public func root() -> Domain?
 }
@@ -165,20 +167,22 @@ RFC 1123 enforces the following rules:
 ```swift
 do {
     let host = try Domain("example.com")
-} catch Domain.ValidationError.empty {
+} catch Domain.Error.empty {
     print("Host cannot be empty")
-} catch Domain.ValidationError.tooLong(let length) {
+} catch Domain.Error.tooLong(let length) {
     print("Host length \(length) exceeds maximum")
-} catch Domain.ValidationError.tooManyLabels {
+} catch Domain.Error.tooManyLabels {
     print("Too many labels in host")
-} catch Domain.ValidationError.invalidLabel(let label) {
+} catch Domain.Error.invalidLabel(let label) {
     print("Invalid label: \(label)")
-} catch Domain.ValidationError.invalidTLD(let tld) {
+} catch Domain.Error.invalidTLD(let tld) {
     print("Invalid TLD: \(tld)")
 }
 ```
 
 ### Codable Support
+
+Add the `RFC 1123 Foundation Integration` product and import `RFC_1123_Foundation_Integration`:
 
 ```swift
 let host = try Domain("example.com")
@@ -195,10 +199,13 @@ let decoded = try JSONDecoder().decode(Domain.self, from: encoded)
 ### Dependencies
 - [swift-rfc-1035](https://github.com/swift-ietf/swift-rfc-1035) - RFC 1035 domain names (stricter predecessor)
 
+### Siblings
+- [swift-rfc-1123-coder](https://github.com/swift-ietf/swift-rfc-1123-coder) - `RFC_1123.Domain.Coder` and `RFC_1123.Domain.Label.Coder`, ASCII/Binary serialization
+
 ## Requirements
 
-- Swift 6.0+
-- macOS 13.0+ / iOS 16.0+
+- Swift 6.4+
+- macOS 27+ / iOS 27+
 
 ## License
 

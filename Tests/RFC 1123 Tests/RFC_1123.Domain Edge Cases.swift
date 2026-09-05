@@ -1,4 +1,3 @@
-import Foundation
 import RFC_1123
 import Testing
 
@@ -74,65 +73,6 @@ extension RFC_1123.Domain {
             #expect(throws: RFC_1123.Domain.Error.invalidLabel(.empty)) {
                 _ = try RFC_1123.Domain(".")
             }
-        }
-
-        @Test
-        func `Encodes as a canonical JSON string`() throws {
-            let domain = try RFC_1123.Domain("example.com")
-            let data = try JSONEncoder().encode(domain)
-            #expect(String(decoding: data, as: UTF8.self) == "\"example.com\"")
-        }
-
-        @Test
-        func `Decodes from a canonical JSON string`() throws {
-            let data = Data("\"host.example.com\"".utf8)
-            let domain = try JSONDecoder().decode(RFC_1123.Domain.self, from: data)
-            #expect(domain == "host.example.com")
-            #expect(domain.tld! == "com")
-        }
-
-        @Test
-        func `Decoding an invalid domain string throws`() throws {
-            let data = Data("\"www..com\"".utf8)
-            #expect(throws: Swift.DecodingError.self) {
-                _ = try JSONDecoder().decode(RFC_1123.Domain.self, from: data)
-            }
-        }
-
-        @Test
-        func `Codable round trip preserves the domain`() throws {
-            let original = try RFC_1123.Domain("www.3com.com")
-            let data = try JSONEncoder().encode(original)
-            let decoded = try JSONDecoder().decode(RFC_1123.Domain.self, from: data)
-            #expect(decoded == original)
-        }
-    }
-}
-
-extension RFC_1123.Domain.Label {
-    @Suite struct `Edge Case` {
-
-        @Test
-        func `Encodes as a canonical JSON string`() throws {
-            let label = try RFC_1123.Domain.Label("example")
-            let data = try JSONEncoder().encode(label)
-            #expect(String(decoding: data, as: UTF8.self) == "\"example\"")
-        }
-
-        @Test
-        func `Decoding an invalid label string throws`() throws {
-            let data = Data("\"-bad-\"".utf8)
-            #expect(throws: Swift.DecodingError.self) {
-                _ = try JSONDecoder().decode(RFC_1123.Domain.Label.self, from: data)
-            }
-        }
-
-        @Test
-        func `Codable round trip preserves the label`() throws {
-            let original = try RFC_1123.Domain.Label("3com")
-            let data = try JSONEncoder().encode(original)
-            let decoded = try JSONDecoder().decode(RFC_1123.Domain.Label.self, from: data)
-            #expect(decoded == original)
         }
     }
 }
