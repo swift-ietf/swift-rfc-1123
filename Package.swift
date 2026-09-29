@@ -33,7 +33,7 @@ let package = Package(
                 .product(name: "RFC 1035", package: "swift-rfc-1035"),
                 .product(name: "ASCII", package: "swift-ascii"),
                 .product(name: "Byte", package: "swift-byte"),
-                .product(name: "Byte Standard Library Integration", package: "swift-byte"),
+                .product(name: "Byte", package: "swift-byte"),
             ]
         ),
         .target(
@@ -55,7 +55,7 @@ let package = Package(
                 .target(name: "RFC 1123"),
                 .product(name: "RFC 1035", package: "swift-rfc-1035"),
                 .product(name: "Byte", package: "swift-byte"),
-                .product(name: "Byte Standard Library Integration", package: "swift-byte"),
+                .product(name: "Byte", package: "swift-byte"),
             ]
         ),
     ],

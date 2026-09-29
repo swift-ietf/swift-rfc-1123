@@ -1,5 +1,5 @@
 import Byte
-import Byte_Standard_Library_Integration
+import Byte
 import RFC_1035
 import RFC_1123
 import Testing
