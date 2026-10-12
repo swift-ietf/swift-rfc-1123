@@ -2,7 +2,7 @@ public import Byte
 
 extension RFC_1123.Domain.Label {
 
-    public enum Error: Swift.Error, Sendable, Equatable {
+    public enum Error: Swift::Error, Sendable, Equatable {
 
         case empty
 
