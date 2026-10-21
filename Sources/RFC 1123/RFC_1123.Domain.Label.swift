@@ -1,5 +1,5 @@
-public import Byte
 import ASCII
+public import Byte
 
 extension RFC_1123.Domain {
 

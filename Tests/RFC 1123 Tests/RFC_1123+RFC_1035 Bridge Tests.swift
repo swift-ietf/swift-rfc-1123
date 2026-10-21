@@ -1,5 +1,4 @@
 import Byte
-import Byte
 import RFC_1035
 import RFC_1123
 import Testing
