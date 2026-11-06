@@ -1,7 +1,9 @@
 import RFC_1123
 import Testing
 
-extension RFC_1123.Domain {
+enum `RFC_1123.Domain Tests` {}
+
+extension `RFC_1123.Domain Tests` {
     @Suite struct `Edge Case` {
 
         @Test
