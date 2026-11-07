@@ -39,7 +39,7 @@
             _ = try RFC_1123.Domain.coder.parse(&input)
             #expect(input.isEmpty)
             var tooLong = slice(over)
-            #expect(throws: (any Error).self) { try RFC_1123.Domain.coder.parse(&tooLong) }
+            #expect(throws: (any Swift.Error).self) { try RFC_1123.Domain.coder.parse(&tooLong) }
         }
     }
 #endif
