@@ -13,7 +13,7 @@
         public static var coder: Coder<ArraySlice<Byte>, [Byte]> { .init() }
     }
 
-extension RFC_1123.Domain.Label.Coder {
+    extension RFC_1123.Domain.Label.Coder {
         public typealias Output = RFC_1123.Domain.Label
 
         public typealias Failure = RFC_1123.Domain.Label.Error
@@ -32,5 +32,5 @@ extension RFC_1123.Domain.Label.Coder {
         public borrowing func serialize(_ output: Output, into buffer: inout Buffer) throws(Failure) {
             Scan.append(output.rawValue, into: &buffer)
         }
-}
+    }
 #endif

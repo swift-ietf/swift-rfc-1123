@@ -3,9 +3,9 @@
     import RFC_1123
     import Testing
 
-enum `RFC 1123 Length Boundary Tests` {}
+    enum `RFC 1123 Length Boundary Tests` {}
 
-extension `RFC 1123 Length Boundary Tests` {
+    extension `RFC 1123 Length Boundary Tests` {
         @Suite
         struct `RFC 1123 length and hyphen boundaries` {
             private func slice(_ text: String) -> ArraySlice<Byte> {
@@ -45,5 +45,5 @@ extension `RFC 1123 Length Boundary Tests` {
                 #expect(throws: (any Swift.Error).self) { try RFC_1123.Domain.coder.parse(&tooLong) }
             }
         }
-}
+    }
 #endif

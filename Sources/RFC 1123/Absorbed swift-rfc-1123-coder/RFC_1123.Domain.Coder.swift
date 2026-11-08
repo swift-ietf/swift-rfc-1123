@@ -13,7 +13,7 @@
         public static var coder: Coder<ArraySlice<Byte>, [Byte]> { .init() }
     }
 
-extension RFC_1123.Domain.Coder {
+    extension RFC_1123.Domain.Coder {
         public typealias Output = RFC_1123.Domain
 
         public typealias Failure = RFC_1123.Domain.Error
@@ -32,5 +32,5 @@ extension RFC_1123.Domain.Coder {
         public borrowing func serialize(_ output: Output, into buffer: inout Buffer) throws(Failure) {
             Scan.append(output.rawValue, into: &buffer)
         }
-}
+    }
 #endif

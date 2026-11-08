@@ -7,7 +7,7 @@
         }
     }
 
-extension RFC_1123.Grammar {
+    extension RFC_1123.Grammar {
         static func isLabelByte(_ byte: Byte) -> Bool {
             guard let code = try? ASCII.Code(byte) else { return false }
             return code.isLetter || code.isDigit || code == ASCII.Code.hyphen
@@ -17,5 +17,5 @@ extension RFC_1123.Grammar {
             guard let code = try? ASCII.Code(byte) else { return false }
             return code.isLetter || code.isDigit || code == ASCII.Code.hyphen || code == ASCII.Code.period
         }
-}
+    }
 #endif

@@ -5,9 +5,9 @@
     import RFC_1123
     import Testing
 
-enum `Serialization Equivalence Tests` {}
+    enum `Serialization Equivalence Tests` {}
 
-extension `Serialization Equivalence Tests` {
+    extension `Serialization Equivalence Tests` {
         @Suite
         struct `Serialization Equivalence` {
 
@@ -43,5 +43,5 @@ extension `Serialization Equivalence Tests` {
                 #expect(String(decoding: wire.map(\.bitPattern), as: UTF8.self) == domain.description)
             }
         }
-}
+    }
 #endif
