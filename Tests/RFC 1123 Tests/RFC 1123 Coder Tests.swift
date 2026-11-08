@@ -7,19 +7,17 @@
     import Serializer
     import Testing
 
-extension `RFC 1123 Coder Tests`.`RFC 1123 Coder Tests` {
-        @Suite
-        struct `RFC 1123 Coder Tests` {
-        }
-}
+    @Suite
+    struct `RFC 1123 Coder Tests` {
+    }
 
-    extension `RFC 1123 Coder Tests`.`RFC 1123 Coder Tests` {
+    extension `RFC 1123 Coder Tests` {
         @Suite struct `Domain Tests` {}
 
         @Suite struct `Label Tests` {}
     }
 
-    extension `RFC 1123 Coder Tests`.`RFC 1123 Coder Tests`.`Domain Tests` {
+    extension `RFC 1123 Coder Tests`.`Domain Tests` {
 
         @Test
         func `reads a host name and stops at the port colon`() throws {
@@ -94,7 +92,7 @@ extension `RFC 1123 Coder Tests`.`RFC 1123 Coder Tests` {
         }
     }
 
-    extension `RFC 1123 Coder Tests`.`RFC 1123 Coder Tests`.`Label Tests` {
+    extension `RFC 1123 Coder Tests`.`Label Tests` {
 
         @Test
         func `reads a label and stops at the dot`() throws {
