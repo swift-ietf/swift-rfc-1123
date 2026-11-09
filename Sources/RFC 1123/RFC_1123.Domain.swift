@@ -223,8 +223,8 @@ extension RFC_1123.Domain {
 extension RFC_1123.Domain {
 
     static func validateTopLevel(_ tld: Label) throws(Error) {
-        guard !tld.rawValue.lowercased().hasPrefix("xn--") else { return }
-        for byte in tld.rawValue.utf8 {
+        guard !tld.description.lowercased().hasPrefix("xn--") else { return }
+        for byte in tld.description.utf8 {
             let isLetter: Bool
             do throws(ASCII.Code.Error) {
                 isLetter = try ASCII.Code(Byte(bitPattern: byte)).isLetter
@@ -232,7 +232,7 @@ extension RFC_1123.Domain {
                 isLetter = false
             }
             guard isLetter else {
-                throw Error.invalidTLD(tld.rawValue)
+                throw Error.invalidTLD(tld.description)
             }
         }
     }

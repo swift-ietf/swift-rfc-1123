@@ -30,7 +30,7 @@
         }
 
         public borrowing func serialize(_ output: Output, into buffer: inout Buffer) throws(Failure) {
-            Scan.append(output.rawValue, into: &buffer)
+            Scan.append(output.description, into: &buffer)
         }
     }
 #endif
