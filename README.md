@@ -6,7 +6,7 @@ Use this package when you need a host name checked against RFC 1123, the rules t
 
 - A label is 1 to 63 ASCII letters, digits and hyphens, and starts and ends with a letter or digit.
 - A name has at most 127 labels and at most 255 bytes. Labels are separated by single dots, so a leading dot, a trailing dot or two dots in a row is an empty label and is refused. The absolute form `example.com.` is therefore not a valid name.
-- The last label must start with a letter, so `example.123com` is refused. Digits may follow the letter, as in `example.com123`, and A-labels such as `xn--p1ai` are accepted.
+- The last label must be all letters, so `example.123com` and `example.com123` are refused. A-labels such as `xn--p1ai` are the exception and are accepted.
 - Names and labels keep the case they were written in for `RFC_1123.Domain.name`, printing and encoding. Equality and hashing ignore case.
 - `RFC_1123.Domain.isSubdomain(of:)` is strict: a domain is not a subdomain of itself. Labels are compared ignoring case.
 - `RFC_1123.Domain.parent()` drops the leftmost label and `RFC_1123.Domain.root()` keeps the last two. Both return nil for a single-label name.

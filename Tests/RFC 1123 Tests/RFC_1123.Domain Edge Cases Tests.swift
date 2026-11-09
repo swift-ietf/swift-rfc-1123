@@ -7,9 +7,23 @@ extension `RFC_1123.Domain Tests` {
     @Suite struct `Edge Case` {
 
         @Test
-        func `TLD starting with a letter may contain digits`() throws {
-            let domain = try RFC_1123.Domain("example.com123")
-            #expect(domain.tld! == "com123")
+        func `TLD containing digits after a leading letter is rejected`() throws {
+            #expect(throws: RFC_1123.Domain.Error.invalidTLD("com123")) {
+                _ = try RFC_1123.Domain("example.com123")
+            }
+        }
+
+        @Test
+        func `Uppercase punycode TLD is accepted`() throws {
+            let domain = try RFC_1123.Domain("example.XN--P1AI")
+            #expect(domain.tld! == "xn--p1ai")
+        }
+
+        @Test
+        func `TLD containing a hyphen outside an A-label is rejected`() throws {
+            #expect(throws: RFC_1123.Domain.Error.invalidTLD("co-m")) {
+                _ = try RFC_1123.Domain("example.co-m")
+            }
         }
 
         @Test
@@ -26,11 +40,12 @@ extension `RFC_1123.Domain Tests` {
         }
 
         @Test
-        func `Labels initializer accepts TLD containing digits after a leading letter`() throws {
+        func `Labels initializer rejects TLD containing digits after a leading letter`() throws {
             let tld = try RFC_1123.Domain.Label("com123")
             let sld = try RFC_1123.Domain.Label("example")
-            let domain = try RFC_1123.Domain(labels: [sld, tld])
-            #expect(domain.name == "example.com123")
+            #expect(throws: RFC_1123.Domain.Error.invalidTLD("com123")) {
+                _ = try RFC_1123.Domain(labels: [sld, tld])
+            }
         }
 
         @Test

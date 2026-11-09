@@ -40,10 +40,10 @@ struct `RFC 1123 Tests` {
     }
 
     @Test
-    func `a top-level domain ending in a digit is accepted`() throws {
-        let domain = try RFC_1123.Domain("example.com123")
-
-        #expect(domain.tld! == "com123")
+    func `a top-level domain ending in a digit is rejected`() throws {
+        #expect(throws: RFC_1123.Domain.Error.invalidTLD("com123")) {
+            _ = try RFC_1123.Domain("example.com123")
+        }
     }
 
     @Test

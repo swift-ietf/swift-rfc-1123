@@ -31,7 +31,7 @@ extension RFC_1123.Domain.Error: CustomStringConvertible {
 
         case .invalidTLD(let tld):
             return
-                "Invalid TLD '\(tld)': highest-level component label must start with a letter (RFC 1123 Section 2.1)"
+                "Invalid TLD '\(tld)': highest-level component label must be alphabetic or an A-label (RFC 1123 Section 2.1)"
         }
     }
 }

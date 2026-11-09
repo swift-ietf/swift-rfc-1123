@@ -91,20 +91,7 @@ extension RFC_1123.Domain {
         }
 
         if let tld = labels.last {
-            guard let first = tld.rawValue.utf8.first else {
-                throw Error.invalidTLD(tld.rawValue)
-            }
-
-            let firstIsLetter: Bool
-            do throws(ASCII.Code.Error) {
-                firstIsLetter = try ASCII.Code(Byte(bitPattern: first)).isLetter
-            } catch {
-                firstIsLetter = false
-            }
-
-            guard firstIsLetter else {
-                throw Error.invalidTLD(tld.rawValue)
-            }
+            try Self.validateTopLevel(tld)
         }
 
         let rawValue = String(decoding: bytes, as: UTF8.self)
@@ -193,20 +180,7 @@ extension RFC_1123.Domain {
         }
 
         if let tld = labels.last {
-            guard let first = tld.rawValue.utf8.first else {
-                throw Error.invalidTLD(tld.rawValue)
-            }
-
-            let firstIsLetter: Bool
-            do throws(ASCII.Code.Error) {
-                firstIsLetter = try ASCII.Code(Byte(bitPattern: first)).isLetter
-            } catch {
-                firstIsLetter = false
-            }
-
-            guard firstIsLetter else {
-                throw Error.invalidTLD(tld.rawValue)
-            }
+            try Self.validateTopLevel(tld)
         }
 
         self.init(__unchecked: (), rawValue: name, labels: labels)
@@ -243,5 +217,23 @@ extension RFC_1123.Domain {
         }
 
         return try RFC_1123.Domain(labels: labels)
+    }
+}
+
+extension RFC_1123.Domain {
+
+    static func validateTopLevel(_ tld: Label) throws(Error) {
+        guard !tld.rawValue.lowercased().hasPrefix("xn--") else { return }
+        for byte in tld.rawValue.utf8 {
+            let isLetter: Bool
+            do throws(ASCII.Code.Error) {
+                isLetter = try ASCII.Code(Byte(bitPattern: byte)).isLetter
+            } catch {
+                isLetter = false
+            }
+            guard isLetter else {
+                throw Error.invalidTLD(tld.rawValue)
+            }
+        }
     }
 }
